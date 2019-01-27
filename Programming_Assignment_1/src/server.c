@@ -10,7 +10,7 @@ int main(int argc, char * argv[]){
     int socket_fd = create_socket();
     int pid, connect_fd;
     struct sockaddr_in server_address, client_address;
-    
+
     set_server_address(&server_address, port);
     bind_server(socket_fd, server_address);
     start_listening(socket_fd);
@@ -18,7 +18,7 @@ int main(int argc, char * argv[]){
 
     while(1)
     {
-        connect_fd = accept(socket_fd, (struct sockaddr *) &client_address, &client_addr_len);
+        connect_fd = accept(socket_fd, (struct sockaddr *) &client_address, (socklen_t *)&client_addr_len);
 
         if(connect_fd < 0)
         {
