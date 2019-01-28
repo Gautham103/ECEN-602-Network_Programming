@@ -33,19 +33,26 @@ int main (int argc,char *argv[])
   if (iRet < 0)
     perror ("ERROR: Socket connection failed");
 
+  printf("Connection is Established with the Server...\n");
   while(1)
   {
     memset (acSendData, 0, BUFFER_SIZE);
     memset (acRecvData, 0, BUFFER_SIZE + 1);
     /* Get data from stdin */
     fgets (acSendData, BUFFER_SIZE, stdin);
+    printf ("CLIENT: Sending data to server %s", acSendData);
+    if (strlen (acSendData) == 0)
+    {
+        printf("Connection closed with the Server because EOF...\n");
+        close(iSocket_fd);
+        exit(0);
+    }
     writen (iSocket_fd, acSendData, strlen (acSendData));
     if (iRet < 0)
     {
         perror ("ERROR: Writen failed to send data");
         break;
     }
-    printf ("CLIENT: Sending data to server \n");
     iRet = iReadLine (iSocket_fd, acRecvData, BUFFER_SIZE);
     if (iRet < 0)
     {
@@ -57,7 +64,7 @@ int main (int argc,char *argv[])
         acRecvData [iRet] = '\0';
     }
     iRet = 0;
-    printf ("CLIENT: Reading data from server %s \n", acRecvData);
+    printf ("CLIENT: Receiving data from server %s \n", acRecvData);
   }
 return 0;
 
