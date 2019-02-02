@@ -15,7 +15,7 @@
 #include <wait.h>
 
 #define QUEUE_SIZE 50
-#define BUFFER_SIZE 5
+#define BUFFER_SIZE 20
 
 int create_socket();
 void set_server_address(struct sockaddr_in *server_address, int port);

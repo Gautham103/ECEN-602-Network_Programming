@@ -14,6 +14,9 @@ Description:
 
 In this project, we have implemented an RFC 862 echo protocol. The server program accepts requests from the clients, and whatever the client sends to the server is echoed back to the client. When the client terminates, the server closes the connection with the client.
 
+Server and makefile are implemented by Amit Rawat.
+Client, read/write functions and test cases are implemented by Gautham Srinivasan.
+
 --------------------------------------------------------------------------------------------------------------------------
 Directory Structure:
 
@@ -42,6 +45,8 @@ Usage:
 ---------------------------------------------------------------------------------------------------------------------------
 File Name: client.c
 Usage:
+1) It creates a socket and connects to the server using IP address and port number.
+2) It gets the input as stdin from user and sends it to the server and also reads data from the server.
 
 
 ---------------------------------------------------------------------------------------------------------------------------

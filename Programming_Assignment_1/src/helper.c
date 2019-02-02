@@ -131,9 +131,9 @@ void start_listening(int socket_fd)
     }
 }
 
-void zombie_handler_func(int signum) 
-{ 
-    wait(NULL); 
+void zombie_handler_func(int signum)
+{
+    wait(NULL);
 }
 
 void read_write(int connect_fd)
@@ -143,13 +143,13 @@ void read_write(int connect_fd)
     {
         char * buffer_array = calloc(BUFFER_SIZE, sizeof(char));
         read_length = iReadLine(connect_fd, buffer_array, BUFFER_SIZE);
-        if(read_length == 0) 
+        if(read_length == 0)
         {
             free(buffer_array);
             break;
         }
         printf("SERVER DATA READ: %s", buffer_array);
-        writen(connect_fd, buffer_array,read_length); 
+        writen(connect_fd, buffer_array,read_length);
         printf("SENDING DATA BACK TO CLIENT\n");
         free(buffer_array);
     }
