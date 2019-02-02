@@ -24,6 +24,38 @@ src - contains the source file.
 
 --------------------------------------------------------------------------------------------------------------------------
 Functions Implemented:
+1) writen - write data on a socket.
+2) iReadLine - read data from the socket.
+3) create_socket - create a new socket file descriptor.
+4) set_server_address - set the server address.
+5) bind_server - bind the socket
+6) start_listening - it make server to listen from the socket.
+7) zombie_handler_func - function for cleaning zombie process.
+8) read_write - read from socket and write to the socket.
 
+--------------------------------------------------------------------------------------------------------------------------
+File Name: server.c
+Usage:
+1) It creates a socket and starts listening on that socket.
+2) It accepts connection from the client. After accepting connection, it forks a new process to serve the client. It also handles zombie processes.
+3) After client exits it closes connection with the client.
+---------------------------------------------------------------------------------------------------------------------------
+File Name: client.c
+Usage:
+
+
+---------------------------------------------------------------------------------------------------------------------------
+File Name: helper.c
+Usage:
+It contains all the helper function which are used in client and server code.
+
+---------------------------------------------------------------------------------------------------------------------------
+File Name: common.h
+Usage:
+It contains all the function declaration and header files used across the code.
+
+--------------------------------------------------------------------------------------------------------------------------
+Running the code:
+1. 
 
 
