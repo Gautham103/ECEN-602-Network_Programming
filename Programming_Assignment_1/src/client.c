@@ -40,14 +40,14 @@ int main (int argc,char *argv[])
     memset (acRecvData, 0, BUFFER_SIZE + 1);
     /* Get data from stdin */
     fgets (acSendData, BUFFER_SIZE, stdin);
-    printf ("CLIENT: Sending data to server %s", acSendData);
     if (strlen (acSendData) == 0)
     {
         printf("Connection closed with the Server because EOF...\n");
         close(iSocket_fd);
         exit(0);
     }
-    writen (iSocket_fd, acSendData, strlen (acSendData));
+    printf ("CLIENT Sending data to server: %s\n", acSendData);
+    iRet = writen (iSocket_fd, acSendData, strlen (acSendData));
     if (iRet < 0)
     {
         perror ("ERROR: Writen failed to send data");
@@ -64,7 +64,7 @@ int main (int argc,char *argv[])
         acRecvData [iRet] = '\0';
     }
     iRet = 0;
-    printf ("CLIENT: Receiving data from server %s \n", acRecvData);
+    printf ("CLIENT Receiving data from server: %s \n", acRecvData);
   }
 return 0;
 

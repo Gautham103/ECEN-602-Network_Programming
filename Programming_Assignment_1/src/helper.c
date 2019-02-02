@@ -71,6 +71,9 @@ int iReadLine (int iSocket_fd, char *pcBuffer, int iBufferSize)
             if (cTempBuffer == '\n')
                 break;
 
+            if (iLength == iBufferSize - 1)
+                break;
+
         }
 
     }
