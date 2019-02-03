@@ -44,6 +44,7 @@ Functions Implemented:
 
 --------------------------------------------------------------------------------------------------------------------------
 File Name: server.c
+
 Usage:
 1) It creates a socket and starts listening on that socket.
 2) It accepts connection from the client. After accepting connection, it forks a new process to serve the client. It also handles zombie processes.
@@ -58,16 +59,12 @@ Usage:
 ---------------------------------------------------------------------------------------------------------------------------
 File Name: helper.c
 
-Usage:
-
-It contains all the helper function which are used in client and server code.
+Usage: It contains all the helper function which are used in client and server code.
 
 ---------------------------------------------------------------------------------------------------------------------------
 File Name: common.h
 
-Usage:
-
-It contains all the function declaration and header files used across the code.
+Usage: It contains all the function declaration and header files used across the code.
 
 --------------------------------------------------------------------------------------------------------------------------
 Running the code:
