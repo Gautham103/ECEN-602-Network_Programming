@@ -57,12 +57,16 @@ Usage:
 
 ---------------------------------------------------------------------------------------------------------------------------
 File Name: helper.c
+
 Usage:
+
 It contains all the helper function which are used in client and server code.
 
 ---------------------------------------------------------------------------------------------------------------------------
 File Name: common.h
+
 Usage:
+
 It contains all the function declaration and header files used across the code.
 
 --------------------------------------------------------------------------------------------------------------------------
