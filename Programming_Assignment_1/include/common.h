@@ -14,9 +14,10 @@
 #include <signal.h>
 #include <wait.h>
 
-#define QUEUE_SIZE 50
-#define BUFFER_SIZE 20
+#define QUEUE_SIZE 50       // Max Queue Size
+#define BUFFER_SIZE 20      // Max Buffer Size
 
+// Function decleration
 int create_socket();
 void set_server_address(struct sockaddr_in *server_address, int port);
 void bind_server(int socket_fd, struct sockaddr_in server_address);
