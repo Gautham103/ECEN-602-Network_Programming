@@ -3,6 +3,7 @@
 
 
 ECEN 602 Network Programming Assignment 1
+
 -------------------------------------------------------------------------------------------------------------------------
 
 Team Number - 8
@@ -61,6 +62,10 @@ It contains all the function declaration and header files used across the code.
 
 --------------------------------------------------------------------------------------------------------------------------
 Running the code:
-1. 
+1. Go to the directory
+2. First run: make clean
+3. Compile code and generate binary: make -f makefile
+4. To run client: ./bin/echo IP_ADDRESS PORT        (Provide the IP address = 127.0.0.1 and port number as command Line)
+5. To run server: ./bin/echos PORT                  (Provide port number as command Line)
 
 
