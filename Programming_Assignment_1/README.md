@@ -17,6 +17,9 @@ Description:
 
 In this project, we have implemented an RFC 862 echo protocol. The server program accepts requests from the clients, and whatever the client sends to the server is echoed back to the client. When the client terminates, the server closes the connection with the client.
 
+---------------------------------------------------------------------------------------------------------------------------
+Contribution:
+
 Server and makefile are implemented by Amit Rawat.
 Client, read/write functions and test cases are implemented by Gautham Srinivasan.
 
@@ -73,5 +76,4 @@ Running the code:
 3. Compile code and generate binary: make -f makefile
 4. To run client: ./bin/echo IP_ADDRESS PORT        (Provide the IP address = 127.0.0.1 and port number as command Line)
 5. To run server: ./bin/echos PORT                  (Provide port number as command Line)
-
 
