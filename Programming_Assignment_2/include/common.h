@@ -23,6 +23,10 @@
 #define BUFFER_SIZE 20
 #define PAYLOAD_SIZE 512
 
+/* SBCP Protocol Version */
+#define PROTOCOL_VERSION 3
+
+/* Header type */
 #define JOIN 2
 #define SEND 4
 #define FWD 3
@@ -31,7 +35,15 @@
 #define ONLINE 8
 #define OFFLINE 6
 #define IDLE 9
-#define STDIN fileno(stdin)
+
+/* Stdin File descriptor */
+#define STDIN_FD 0
+
+/* Attributes type */
+#define REASON 1
+#define USERNAME 2
+#define CLIENT_COUNT 3
+#define MESSAGE 4
 
 /* SBCP message header format */
 typedef struct
@@ -50,20 +62,17 @@ typedef struct
 }sbcp_attribute_t;
 
 /* SBCP message structure */
-struct message
+typedef struct
 {
-    sbcp_header_t sMsgHeader;
+    sbcp_header_t    sMsgHeader;
     sbcp_attribute_t sMsgAttribute;
-};
+}sbcp_message_t;
 
 
 int create_socket();
 void set_server_address(struct sockaddr_in *server_address, int port);
 void bind_server(int socket_fd, struct sockaddr_in server_address);
 void start_listening(int socket_fd);
-int iReadLine (int iSocket_fd, char *pcBuffer, int iBufferSize);
-int writen (int iSocket_fd, char *pcBuffer, int iBufferSize);
 void zombie_handler_func(int signum);
-void read_write(int connect_fd);
 
 #endif // COMMON_INCLUDED

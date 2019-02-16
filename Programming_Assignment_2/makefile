@@ -7,8 +7,8 @@ OBJECT=$(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SOURCES:.c=.o))
 OBJDIR=obj
 serverDep=$(OBJDIR)/server.o $(OBJDIR)/helper.o 
 OUTPUTDIR=bin
-SERVER=echos
-CLIENT=echo
+SERVER=server
+CLIENT=client
 all: $(SERVER) $(CLIENT)
 
 $(SERVER): $(OBJECT)
