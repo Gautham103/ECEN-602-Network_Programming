@@ -67,6 +67,7 @@ typedef struct
     sbcp_header_t    sMsgHeader;
     sbcp_attribute_t sMsgAttribute;
 }sbcp_message_t;
+
 // User data
 struct user_data{
     char user_name[16];
@@ -79,6 +80,13 @@ int create_socket();
 void set_server_address(struct sockaddr_in *server_address, int port);
 void bind_server(int socket_fd, struct sockaddr_in server_address);
 void start_listening(int socket_fd);
-void zombie_handler_func(int signum);
+
+// My functions
+int accept_connection(struct sockaddr_in * client_addresses, int client_count, int socket_fd);
+int join_message_process(int new_client_fd, int * client_count, int max_client, struct user_data * clients);
+void send_nack_message(int new_client_fd, int client_count, struct user_data * clients, int code);
+void send_ack_message(int new_client_fd, int client_count, struct user_data * clients);
+int check_name(char * name, int client_count, int max_client, struct user_data * clients);
+void broadcast_message(int listening_fd, int socket_fd, struct user_data * clients, int max_fd, fd_set * set1, int *client_count);
 
 #endif // COMMON_INCLUDED

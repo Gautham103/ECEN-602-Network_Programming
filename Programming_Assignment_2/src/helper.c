@@ -1,87 +1,5 @@
 #include "common.h"
 
-int writen (int iSocket_fd, char *pcBuffer, int iBufferSize)
-{
-    int iBytesLeft = iBufferSize, iBytesSent = 0;
-
-    while (iBytesLeft > 0)
-    {
-        iBytesSent = write (iSocket_fd, pcBuffer, iBytesLeft);
-        if (iBytesSent < 0)
-        {
-            if (errno == EINTR)
-            {
-                /* EINTR. Retry */
-                continue;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-        else
-        {
-            /* Send again if bytes are left */
-            iBytesLeft -= iBytesSent;
-            pcBuffer += iBytesSent;
-
-        }
-    }
-
-    return iBufferSize;
-}
-
-
-int iReadLine (int iSocket_fd, char *pcBuffer, int iBufferSize)
-{
-    int iLength = 0, iRet = 0;
-    char cTempBuffer;
-
-    while (1)
-    {
-        /* Read one character by character */
-        iRet = read (iSocket_fd, &cTempBuffer, 1);
-        if (iRet < 0)
-        {
-            if (errno == EINTR)
-            {
-                /* EINTR. Retry */
-                continue;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-        else if (iRet == 0)
-        {
-            /* No charactered read. EOF */
-            *pcBuffer = '\0';
-            return iLength;
-        }
-        else
-        {
-            if (iLength < iBufferSize - 1)
-            {
-                *pcBuffer = cTempBuffer;
-                pcBuffer++;
-                iLength++;
-            }
-
-            if (cTempBuffer == '\n')
-                break;
-
-            if (iLength == iBufferSize - 1)
-                break;
-
-        }
-
-    }
-    *pcBuffer = '\0';
-    return iLength;
-
-}
-
 int create_socket(){
     int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(socket_fd == -1)
@@ -131,33 +49,9 @@ void start_listening(int socket_fd)
     }
 }
 
-void zombie_handler_func(int signum)
-{
-    wait(NULL);
-}
-
-void read_write(int connect_fd)
-{
-    int read_length = 0;
-    while(1)
-    {
-        char * buffer_array = calloc(BUFFER_SIZE, sizeof(char));
-        read_length = iReadLine(connect_fd, buffer_array, BUFFER_SIZE);
-        if(read_length == 0)
-        {
-            free(buffer_array);
-            break;
-        }
-        printf("SERVER DATA READ: %s", buffer_array);
-        writen(connect_fd, buffer_array,read_length);
-        printf("SENDING DATA BACK TO CLIENT\n");
-        free(buffer_array);
-    }
-}
-
 int accept_connection(struct sockaddr_in * client_addresses, int client_count, int socket_fd)
 {
-    int len = sizeof(client_addresses[client_count]);
+    socklen_t len = (socklen_t)sizeof(client_addresses[client_count]);
     int new_socket_fd = accept(socket_fd, (struct sockaddr *)&client_addresses[client_count], &len);
     if(new_socket_fd < 0)
     {
@@ -167,7 +61,7 @@ int accept_connection(struct sockaddr_in * client_addresses, int client_count, i
     return new_socket_fd;
 }
 
-int check_name(char []name, int client_count, int max_client, struct user_data * clients){
+int check_name(char * name, int client_count, int max_client, struct user_data * clients){
     if(client_count == max_client)
     {
         return -1;
@@ -183,7 +77,7 @@ int check_name(char []name, int client_count, int max_client, struct user_data *
 }
 
 void send_ack_message(int new_client_fd, int client_count, struct user_data * clients){
-    struct message ack_message;
+	sbcp_message_t ack_message;
     sbcp_header_t ack_header;
     sbcp_attribute_t ack_attribute;
 
@@ -192,10 +86,10 @@ void send_ack_message(int new_client_fd, int client_count, struct user_data * cl
 
     ack_attribute.uiType = 4;
 
-    char msg[200];
+    char msg[512];
     msg[0] = (char)(((int)'0')+ client_count);
     msg[1] = ' ';
-    msg[2] = '\0'
+    msg[2] = '\0';
     for(int i=0; i < client_count-1; i++)
     {
         strcat(msg,clients[i].user_name);
@@ -205,7 +99,7 @@ void send_ack_message(int new_client_fd, int client_count, struct user_data * cl
         }
     }
     ack_attribute.uiLength = strlen(msg)+1;
-    strcpy(ack_attribute.payload, msg);
+    strcpy(ack_attribute.acPayload, msg);
     ack_message.sMsgHeader = ack_header;
     ack_message.sMsgAttribute = ack_attribute;
 
@@ -213,7 +107,7 @@ void send_ack_message(int new_client_fd, int client_count, struct user_data * cl
 }
 
 void send_nack_message(int new_client_fd, int client_count, struct user_data * clients, int code){
-    struct message nack_message;
+	sbcp_message_t nack_message;
     sbcp_header_t nack_header;
     sbcp_attribute_t nack_attribute;
 
@@ -229,30 +123,30 @@ void send_nack_message(int new_client_fd, int client_count, struct user_data * c
         strcpy(msg,"Ran into some anomaly...please check if username or wait till chatroom is free\n");
     }
 
-    nack_attribute.length = strlen(msg);
-    strcpy(nack_attribute.payload, msg);
+    nack_attribute.uiLength = strlen(msg);
+    strcpy(nack_attribute.acPayload, msg);
 
-    nack_message.header = nack_header;
-    nack_message.attribute[0] = nack_attribute`;
+    nack_message.sMsgHeader = nack_header;
+    nack_message.sMsgAttribute = nack_attribute;
 
     send(new_client_fd,(void *) &nack_message,sizeof(nack_message),0);
 
     close(new_client_fd);
 
-} 
+}
 
-int join_message_process(int new_client_fd, int &client_count, int max_client, struct user_data * clients){
-    struct message join_message;
+int join_message_process(int new_client_fd, int *client_count, int max_client, struct user_data * clients){
+	sbcp_message_t join_message;
     sbcp_attribute_t join_message_attr;
     recv(new_client_fd,(struct message *) &join_message,sizeof(join_message),0);
     join_message_attr = join_message.sMsgAttribute;
     char name[16];
-    strcpy(name, join_message_attr.payload);
+    strcpy(name, join_message_attr.acPayload);
     if(check_name(name, *client_count, max_client, clients) == -1)
     {
         printf("User name already exist.\n");
-        sendNAK(new_client_fd, client_count, clients,1);
-        return 1;
+        send_nack_message(new_client_fd, *client_count, clients,1);
+        return -1;
     }
     else
     {
@@ -260,10 +154,83 @@ int join_message_process(int new_client_fd, int &client_count, int max_client, s
         clients[*client_count].socket_fd = new_client_fd;
         clients[*client_count].user_number = *client_count;
         *client_count = (*client_count) + 1;
+        send_ack_message(new_client_fd, *client_count, clients);
     }
     return 0;
 }
 
+void remove_client(struct user_data * clients, int socket_fd, int client_count)
+{
+	int index = 0;
+	for(index=0; index < client_count; index++)
+	{
+		if(clients[index].socket_fd == socket_fd)
+		{
+			break;
+		}
+	}
+	while(index+1 < client_count)
+	{
+		clients[index] = clients[index+1];
+	}
+}
 
+void broadcast_message(int listening_fd, int socket_fd, struct user_data * clients, int max_fd, fd_set * set1, int *client_count){
+	// Messages
+	sbcp_message_t message_from_client;
+	sbcp_message_t message_to_client;
+	//sbcp_attribute_t message_attr;
 
+	int recv_bytes = recv(socket_fd, (sbcp_message_t *) &message_from_client, sizeof(sbcp_message_t), 0);
+	if(recv_bytes <= 0)
+	{
+		if(recv_bytes == 0)
+		{
+			printf("Connection closed by by socket %d", socket_fd);
+			for(int j = 0; j <=max_fd; j++)
+			{
+				if(j != listening_fd && j != socket_fd)
+				{
+					FD_ISSET(j, set1);
+				}
+			}
+		}
+		else
+		{
+			perror("Error receiving message: ");
+			exit(-1);
+		}
+		close(socket_fd);
+		FD_CLR(socket_fd, set1);
+		remove_client(clients, socket_fd, *client_count);
+		(*client_count) = (*client_count) - 1;
+	}
+	else
+	{
+		message_to_client.sMsgHeader.uiType = 3;
+		message_to_client.sMsgHeader.uiVrsn = 3;
+		message_to_client.sMsgAttribute.uiType= 4;
+
+		for(int index=0; index <= (*client_count); index++)
+		{
+			if(clients[index].socket_fd == socket_fd)
+			{
+				strcat(message_to_client.sMsgAttribute.acPayload, clients[index].user_name);
+                strcat(message_to_client.sMsgAttribute.acPayload, ": ");
+                strcat(message_to_client.sMsgAttribute.acPayload, message_from_client.sMsgAttribute.acPayload);
+			}
+		}
+		for(int index=0; index <= (*client_count); index++)
+		{
+			if(index != listening_fd && index!=socket_fd)
+			{
+				if(send(clients[index].socket_fd, (void *) &message_to_client, sizeof(sbcp_message_t), 0) == -1){
+					perror("Sending Message Error: ");
+					exit(-1);
+				}
+			}
+		}
+	}
+
+}
 

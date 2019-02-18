@@ -8,19 +8,12 @@ int main(int argc, char * argv[]){
 
     // Variable decleration
     int port = atoi(argv[1]);
-    int client_addr_len;
     int socket_fd = create_socket();
-    int pid, connect_fd;
-    struct sockaddr_in server_address, *client_addresses;  
+    struct sockaddr_in server_address, *client_addresses;
     int socket_itr;
     // Maximum number of connection
     int max_client = atoi(argv[2]);
     int client_count = 0;
-    
-    // Messages
-    struct message message_from_client;
-    struct message message_to_client;
-    struct sbcp_attribute_t message_attr;
 
     // Variables for select
     fd_set set1;
@@ -37,7 +30,7 @@ int main(int argc, char * argv[]){
     start_listening(socket_fd);
 
     // Assigning data
-    client_addresses = (struct sockaddr_in *) malloc(max_client * sizeof(sockaddr_in));
+    client_addresses = (struct sockaddr_in *) malloc(max_client * sizeof(struct sockaddr_in));
     clients = (struct user_data *) malloc(max_client * sizeof(struct user_data));
     FD_SET(socket_fd, &set1);
     max_fd = socket_fd;
@@ -62,15 +55,26 @@ int main(int argc, char * argv[]){
                     FD_SET(new_client_fd, &set1);
                     max_fd = new_client_fd > max_fd ? new_client_fd : max_fd;
                     int status = join_message_process(new_client_fd, &client_count, max_client, clients);
-                    if(status != 1)
+                    if(status != -1)
                     {
                         for(int k=0; k <= max_fd; k++)
                         {
-                            
+                            if (FD_ISSET(k, &set1)) {
+
+									if (k != socket_fd && k != new_client_fd) //remove the sender and the listener sockets
+                                    {
+                                        
+									}
+								}
                         }
                     }
                 }
             }
+            else
+            {
+            	broadcast_message(socket_fd, socket_itr, clients, max_fd, &set1, &client_count);
+            }
+
         }
     }
 
