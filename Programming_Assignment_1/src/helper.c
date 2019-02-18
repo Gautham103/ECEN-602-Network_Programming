@@ -1,5 +1,6 @@
 #include "common.h"
 
+// Function writing to socket
 int writen (int iSocket_fd, char *pcBuffer, int iBufferSize)
 {
     int iBytesLeft = iBufferSize, iBytesSent = 0;
@@ -31,7 +32,7 @@ int writen (int iSocket_fd, char *pcBuffer, int iBufferSize)
     return iBufferSize;
 }
 
-
+// Function reading character from socket
 int iReadLine (int iSocket_fd, char *pcBuffer, int iBufferSize)
 {
     int iLength = 0, iRet = 0;
@@ -83,7 +84,7 @@ int iReadLine (int iSocket_fd, char *pcBuffer, int iBufferSize)
 }
 
 int create_socket(){
-    int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+    int socket_fd = socket(AF_INET, SOCK_STREAM, 0);  // Create a socket file descriptor
     if(socket_fd == -1)
     {
         perror("Socket Create Faild");
@@ -95,6 +96,7 @@ int create_socket(){
     return socket_fd;
 }
 
+// Set the server address
 void set_server_address(struct sockaddr_in *server_address, int port)
 {
     bzero(server_address, sizeof(*server_address));
@@ -103,6 +105,7 @@ void set_server_address(struct sockaddr_in *server_address, int port)
     (*server_address).sin_port = htons(port);
 }
 
+// Bind the server
 void bind_server(int socket_fd, struct sockaddr_in server_address)
 {
     int val = bind(socket_fd, (struct sockaddr *) &server_address, sizeof(server_address));
@@ -117,6 +120,7 @@ void bind_server(int socket_fd, struct sockaddr_in server_address)
     }
 }
 
+// 
 void start_listening(int socket_fd)
 {
     int val = listen(socket_fd, QUEUE_SIZE);
@@ -131,11 +135,13 @@ void start_listening(int socket_fd)
     }
 }
 
+// Function for handling zombie process
 void zombie_handler_func(int signum)
 {
     wait(NULL);
 }
 
+// Function that read from the socket and write to socket
 void read_write(int connect_fd)
 {
     int read_length = 0;
@@ -148,7 +154,7 @@ void read_write(int connect_fd)
             free(buffer_array);
             break;
         }
-        printf("SERVER DATA READ: %s", buffer_array);
+        printf("SERVER DATA READ: %s\n", buffer_array);
         writen(connect_fd, buffer_array,read_length);
         printf("SENDING DATA BACK TO CLIENT\n");
         free(buffer_array);
