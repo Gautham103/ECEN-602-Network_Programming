@@ -67,6 +67,12 @@ typedef struct
     sbcp_header_t    sMsgHeader;
     sbcp_attribute_t sMsgAttribute;
 }sbcp_message_t;
+// User data
+struct user_data{
+    char user_name[16];
+    int socket_fd;
+    int user_number;
+};
 
 
 int create_socket();
