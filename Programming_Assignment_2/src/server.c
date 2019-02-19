@@ -19,7 +19,6 @@ int main(int argc, char * argv[]){
     fd_set set1;
     fd_set set2;
     int max_fd;
-    int dup_fd;
     int k;
 
     // All the user related data
@@ -52,7 +51,6 @@ int main(int argc, char * argv[]){
                 if(socket_itr == socket_fd)
                 {
                     int new_client_fd = accept_connection(client_addresses, client_count, socket_fd);
-                    dup_fd = max_fd;
                     int status = join_message_process(new_client_fd, &client_count, max_client, clients);
                     if(status != -1)
                     {

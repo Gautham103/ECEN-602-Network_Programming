@@ -231,7 +231,7 @@ void broadcast_message(int listening_fd, int socket_fd, struct user_data * clien
 		message_to_client.sMsgHeader.uiVrsn = 3;
 		message_to_client.sMsgAttribute.uiType= 4;
 
-		for(index=0; index <= (*client_count); index++)
+		for(index=0; index <= max_fd; index++)
 		{
 			if(clients[index].socket_fd == socket_fd)
 			{
@@ -241,7 +241,7 @@ void broadcast_message(int listening_fd, int socket_fd, struct user_data * clien
                 break;
 			}
 		}
-		for(index=0; index <= (*client_count); index++)
+		for(index=0; index <= max_fd; index++)
 		{
 			if (FD_ISSET(index, set1)) {
 				if(index != listening_fd && index!=socket_fd)
