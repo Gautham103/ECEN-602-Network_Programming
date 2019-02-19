@@ -238,7 +238,14 @@ void broadcast_message(int listening_fd, int socket_fd, struct user_data * clien
 			{
 				strcpy(message_to_client.sMsgAttribute.acPayload, clients[index].user_name);
                 strcat(message_to_client.sMsgAttribute.acPayload, ": ");
-                strcat(message_to_client.sMsgAttribute.acPayload, message_from_client.sMsgAttribute.acPayload);
+                if (message_from_client.sMsgHeader.uiType == IDLE)
+                {
+                    strcat(message_to_client.sMsgAttribute.acPayload, "IDLE");
+                }
+                else
+                {
+                    strcat(message_to_client.sMsgAttribute.acPayload, message_from_client.sMsgAttribute.acPayload);
+                }
                 strcat(message_to_client.sMsgAttribute.acPayload,"\n");
                 break;
 			}

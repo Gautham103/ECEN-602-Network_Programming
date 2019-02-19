@@ -18,6 +18,10 @@
 #include <sys/uio.h>
 #include <sys/select.h>
 #include <sys/time.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <time.h>
 
 #define QUEUE_SIZE 50
 #define BUFFER_SIZE 20
@@ -45,6 +49,7 @@
 #define CLIENT_COUNT 3
 #define MESSAGE 4
 
+#define IDLE_WAIT_TIME 10
 
 #define DEBUG_CLIENT_MSG(...)                                       \
     do                                                                  \
@@ -111,5 +116,6 @@ int check_name(char * name, int client_count, int max_client, struct user_data *
 void broadcast_message(int listening_fd, int socket_fd, struct user_data * clients, int max_fd, fd_set * set1, int *client_count);
 sbcp_message_t * get_join_message(char * new_user_name);
 sbcp_message_t * get_hung_message(char * new_user_name);
+void vSendIdleMessage (void *arg);
 
 #endif // COMMON_INCLUDED

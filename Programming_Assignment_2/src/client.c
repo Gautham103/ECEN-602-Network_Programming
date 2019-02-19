@@ -1,4 +1,6 @@
 #include "common.h"
+pthread_mutex_t ready_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t ready_cond = PTHREAD_COND_INITIALIZER;
 
 int main (int argc,char *argv[])
 {
@@ -10,6 +12,8 @@ int main (int argc,char *argv[])
     int              fdMax;
     sbcp_message_t  *psMessage = NULL;
     unsigned int     uiChatLength;
+    pthread_attr_t   sThreadAttr;
+    pthread_t        iThreadId = 0;
 
     port_number = atoi(argv[3]);
 
@@ -84,6 +88,15 @@ int main (int argc,char *argv[])
     DEBUG_CLIENT_MSG("Connection is Established with the Server...\n");
     FD_SET(0, &fdRead_Set);              // add user input from keyboard to the Read_FDs set
     FD_SET(iSocket_fd, &fdRead_Set); // add sockfd to the Read_FDs set
+
+    pthread_attr_init (&sThreadAttr);
+    pthread_attr_setdetachstate (&sThreadAttr, PTHREAD_CREATE_DETACHED);
+
+    iRet = pthread_create ((pthread_t *)&iThreadId, &sThreadAttr,
+            (void *)&vSendIdleMessage,
+            (void *)&iSocket_fd);
+
+
     while(1)
     {
         fdMax = iSocket_fd;
@@ -120,6 +133,9 @@ int main (int argc,char *argv[])
                 strcpy (psMessage->sMsgAttribute.acPayload, acChatData);
                 DEBUG_CLIENT_MSG("psMessage->sMsgAttribute.acPayload %s\n", psMessage->sMsgAttribute.acPayload);
 
+                pthread_mutex_lock(&ready_mutex);
+                pthread_cond_signal(&ready_cond);
+                pthread_mutex_unlock(&ready_mutex);
                 // Sending SEND message to server
                 iRet = send(iSocket_fd, (sbcp_message_t *)psMessage, sizeof(sbcp_message_t), 0);
                 if (iRet < 0)
@@ -164,4 +180,58 @@ int main (int argc,char *argv[])
         FD_SET(iSocket_fd, &fdRead_Set);
 
     }
+}
+
+void vSendIdleMessage (void *arg)
+{
+    int *iSocket_fd = (int *)arg;
+    int iRet = 0;
+    time_t T;
+    struct timespec t;
+    sbcp_message_t  *psMessage = NULL;
+
+    while (1)
+    {
+WaitAgain:
+        time(&T);
+        t.tv_sec = T + IDLE_WAIT_TIME;
+        pthread_mutex_lock(&ready_mutex);
+        iRet = pthread_cond_timedwait(&ready_cond, &ready_mutex, &t);
+        pthread_mutex_unlock(&ready_mutex);
+        if (iRet != 0)
+        {
+            if (errno == EAGAIN)
+            {
+                DEBUG_CLIENT_MSG("EAGIN");
+
+            }
+            else
+            {
+                DEBUG_CLIENT_MSG("wait timed out");
+                psMessage = (sbcp_message_t *)malloc (sizeof (sbcp_message_t));
+                bzero (psMessage, sizeof (sbcp_message_t));
+
+                // SBCP Header - SEND
+                psMessage->sMsgHeader.uiVrsn = PROTOCOL_VERSION;
+                psMessage->sMsgHeader.uiType = IDLE;
+                psMessage->sMsgHeader.uiLength = 520;
+
+                // Sending SEND message to server
+                iRet = send(*iSocket_fd, (sbcp_message_t *)psMessage, sizeof(sbcp_message_t), 0);
+                if (iRet < 0)
+                {
+                    perror ("ERROR: Writen failed to send data");
+                }
+                if (psMessage != NULL)
+                    free (psMessage);
+            }
+        }
+        else
+        {
+            DEBUG_CLIENT_MSG("Waiting again");
+            goto WaitAgain;
+        }
+
+    }
+
 }

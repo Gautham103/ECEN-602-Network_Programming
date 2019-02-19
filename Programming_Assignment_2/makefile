@@ -15,7 +15,7 @@ $(SERVER): $(OBJECT)
 	$(CC) -o $(OUTPUTDIR)/$@ obj/helper.o obj/server.o 
 
 $(CLIENT): $(OBJECT)
-	$(CC) -o $(OUTPUTDIR)/$@ obj/helper.o obj/client.o
+	$(CC) -o $(OUTPUTDIR)/$@ obj/helper.o obj/client.o -lpthread
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
