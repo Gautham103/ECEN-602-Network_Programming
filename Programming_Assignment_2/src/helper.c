@@ -174,6 +174,7 @@ void remove_client(struct user_data * clients, int socket_fd, int client_count)
 	while(index+1 < client_count)
 	{
 		clients[index] = clients[index+1];
+        index++;
 	}
 }
 
