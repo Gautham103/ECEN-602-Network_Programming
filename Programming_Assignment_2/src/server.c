@@ -52,29 +52,34 @@ int main(int argc, char * argv[]){
                 {
                     int new_client_fd = accept_connection(client_addresses, client_count, socket_fd);
                     dup_fd = max_fd;
-                    FD_SET(new_client_fd, &set1);
-                    max_fd = new_client_fd > max_fd ? new_client_fd : max_fd;
                     int status = join_message_process(new_client_fd, &client_count, max_client, clients);
                     if(status != -1)
                     {
+                        max_fd = new_client_fd > max_fd ? new_client_fd : max_fd;
+                        FD_SET(new_client_fd, &set1);
+                    	sbcp_message_t * join_message = get_join_message(clients[client_count].user_name);
                         for(int k=0; k <= max_fd; k++)
                         {
                             if (FD_ISSET(k, &set1)) {
 
-									if (k != socket_fd && k != new_client_fd) //remove the sender and the listener sockets
+									if (k != new_client_fd && k != socket_fd) //remove the sender and the listener sockets
                                     {
-                                        
+										if(send(k, (void *) join_message, sizeof(sbcp_message_t), 0) == -1){
+											perror("Sending Message Error: ");
+											exit(-1);
+										}
+
 									}
 								}
                         }
                     }
                 }
+                else
+                {
+                    broadcast_message(socket_fd, socket_itr, clients, max_fd, &set1, &client_count);
+                }
+                
             }
-            else
-            {
-            	broadcast_message(socket_fd, socket_itr, clients, max_fd, &set1, &client_count);
-            }
-
         }
     }
 

@@ -88,5 +88,7 @@ void send_nack_message(int new_client_fd, int client_count, struct user_data * c
 void send_ack_message(int new_client_fd, int client_count, struct user_data * clients);
 int check_name(char * name, int client_count, int max_client, struct user_data * clients);
 void broadcast_message(int listening_fd, int socket_fd, struct user_data * clients, int max_fd, fd_set * set1, int *client_count);
+sbcp_message_t * get_join_message(char * new_user_name);
+sbcp_message_t * get_hung_message(char * new_user_name);
 
 #endif // COMMON_INCLUDED

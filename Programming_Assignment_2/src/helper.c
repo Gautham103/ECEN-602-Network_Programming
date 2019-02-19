@@ -176,28 +176,41 @@ void remove_client(struct user_data * clients, int socket_fd, int client_count)
 }
 
 void broadcast_message(int listening_fd, int socket_fd, struct user_data * clients, int max_fd, fd_set * set1, int *client_count){
-	// Messages
-	sbcp_message_t message_from_client;
-	sbcp_message_t message_to_client;
-	//sbcp_attribute_t message_attr;
 
+    sbcp_message_t message_from_client;
 	int recv_bytes = recv(socket_fd, (sbcp_message_t *) &message_from_client, sizeof(sbcp_message_t), 0);
 	if(recv_bytes <= 0)
 	{
 		if(recv_bytes == 0)
 		{
 			printf("Connection closed by by socket %d", socket_fd);
+			sbcp_message_t * hung_message;
+
+			for(int index=0; index <= (*client_count); index++)
+			{
+				if(clients[index].socket_fd == socket_fd){
+					hung_message = get_hung_message(clients[index].user_name);
+					break;
+				}
+			}
 			for(int j = 0; j <=max_fd; j++)
 			{
-				if(j != listening_fd && j != socket_fd)
+				if(FD_ISSET(j, set1))
 				{
-					FD_ISSET(j, set1);
+					if(j != listening_fd && j != socket_fd)
+					{
+						if(send(j, (void *) hung_message, sizeof(sbcp_message_t), 0) == -1){
+							perror("Sending Message Error: ");
+							exit(-1);
+						}
+					}
 				}
+
 			}
 		}
 		else
 		{
-			perror("Error receiving message: ");
+			perror("Error receiving message");
 			exit(-1);
 		}
 		close(socket_fd);
@@ -207,6 +220,10 @@ void broadcast_message(int listening_fd, int socket_fd, struct user_data * clien
 	}
 	else
 	{
+        // Messages
+	    
+	    sbcp_message_t message_to_client;
+	    
 		message_to_client.sMsgHeader.uiType = 3;
 		message_to_client.sMsgHeader.uiVrsn = 3;
 		message_to_client.sMsgAttribute.uiType= 4;
@@ -218,19 +235,52 @@ void broadcast_message(int listening_fd, int socket_fd, struct user_data * clien
 				strcat(message_to_client.sMsgAttribute.acPayload, clients[index].user_name);
                 strcat(message_to_client.sMsgAttribute.acPayload, ": ");
                 strcat(message_to_client.sMsgAttribute.acPayload, message_from_client.sMsgAttribute.acPayload);
+                break;
 			}
 		}
 		for(int index=0; index <= (*client_count); index++)
 		{
-			if(index != listening_fd && index!=socket_fd)
-			{
-				if(send(clients[index].socket_fd, (void *) &message_to_client, sizeof(sbcp_message_t), 0) == -1){
-					perror("Sending Message Error: ");
-					exit(-1);
+			if (FD_ISSET(index, set1)) {
+				if(index != listening_fd && index!=socket_fd)
+				{
+					if(send(index, (void *) &message_to_client, sizeof(sbcp_message_t), 0) == -1){
+						perror("Sending Message Error: ");
+						exit(-1);
+					}
 				}
 			}
+
 		}
 	}
 
 }
+
+sbcp_message_t * get_join_message(char * new_user_name){
+	sbcp_message_t * message_to_client = malloc(sizeof(sbcp_message_t));
+	(*message_to_client).sMsgHeader.uiType = 3;
+	(*message_to_client).sMsgHeader.uiVrsn = 3;
+	(*message_to_client).sMsgAttribute.uiType= 4;
+	strcat((*message_to_client).sMsgAttribute.acPayload, new_user_name);
+	strcat((*message_to_client).sMsgAttribute.acPayload, " ");
+	strcat((*message_to_client).sMsgAttribute.acPayload, "joined the chat.\n");
+	return message_to_client;
+}
+
+sbcp_message_t * get_hung_message(char * new_user_name){
+	sbcp_message_t *message_to_client = malloc(sizeof(sbcp_message_t));
+	(*message_to_client).sMsgHeader.uiType = 3;
+	(*message_to_client).sMsgHeader.uiVrsn = 3;
+	(*message_to_client).sMsgAttribute.uiType= 4;
+	strcat((*message_to_client).sMsgAttribute.acPayload, new_user_name);
+	//strcat((*message_to_client).sMsgAttribute.acPayload, " ");
+	strcat((*message_to_client).sMsgAttribute.acPayload, " left the chat.\n");
+	return message_to_client;
+}
+
+
+
+
+
+
+
 
