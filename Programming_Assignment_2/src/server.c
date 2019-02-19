@@ -56,7 +56,7 @@ int main(int argc, char * argv[]){
                     {
                         max_fd = new_client_fd > max_fd ? new_client_fd : max_fd;
                         FD_SET(new_client_fd, &set1);
-                    	sbcp_message_t * join_message = get_join_message(clients[client_count].user_name);
+                    	sbcp_message_t * join_message = get_join_message(clients[client_count-1].user_name);
                         for(k=0; k <= max_fd; k++)
                         {
                             if (FD_ISSET(k, &set1)) {

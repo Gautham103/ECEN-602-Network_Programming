@@ -180,6 +180,8 @@ void remove_client(struct user_data * clients, int socket_fd, int client_count)
 void broadcast_message(int listening_fd, int socket_fd, struct user_data * clients, int max_fd, fd_set * set1, int *client_count){
 
     sbcp_message_t message_from_client;
+    sbcp_message_t message_to_client;
+
     int index, j;
 	int recv_bytes = recv(socket_fd, (sbcp_message_t *) &message_from_client, sizeof(sbcp_message_t), 0);
 	if(recv_bytes <= 0)
@@ -225,19 +227,18 @@ void broadcast_message(int listening_fd, int socket_fd, struct user_data * clien
 	{
         // Messages
 
-	    sbcp_message_t message_to_client;
-
 		message_to_client.sMsgHeader.uiType = 3;
 		message_to_client.sMsgHeader.uiVrsn = 3;
 		message_to_client.sMsgAttribute.uiType= 4;
 
-		for(index=0; index <= max_fd; index++)
+		for(index=0; index <= (*client_count); index++)
 		{
 			if(clients[index].socket_fd == socket_fd)
 			{
-				strcat(message_to_client.sMsgAttribute.acPayload, clients[index].user_name);
+				strcpy(message_to_client.sMsgAttribute.acPayload, clients[index].user_name);
                 strcat(message_to_client.sMsgAttribute.acPayload, ": ");
                 strcat(message_to_client.sMsgAttribute.acPayload, message_from_client.sMsgAttribute.acPayload);
+                strcat(message_to_client.sMsgAttribute.acPayload,"\n");
                 break;
 			}
 		}
