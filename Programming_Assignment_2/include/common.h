@@ -45,6 +45,27 @@
 #define CLIENT_COUNT 3
 #define MESSAGE 4
 
+
+#define DEBUG_CLIENT_MSG(...)                                       \
+    do                                                                  \
+{                                                                   \
+    fprintf (stderr, "CLIENT MSG:: PID : %d, %s:%d:\t", getpid (),  __func__, __LINE__);      \
+    fprintf (stderr, ##__VA_ARGS__);                                               \
+    fprintf (stderr, "\n");                                                 \
+    fflush (stderr);                                                        \
+}                                                                   \
+while (0); \
+
+#define DEBUG_SERVER_MSG(...)                                       \
+    do                                                                  \
+{                                                                   \
+    fprintf (stderr, "SERVER MSG:: PID : %d, %s:%d:\t", getpid (),  __func__, __LINE__);      \
+    fprintf (stderr, ##__VA_ARGS__);                                               \
+    fprintf (stderr, "\n");                                                 \
+    fflush (stderr);                                                        \
+}                                                                   \
+while (0); \
+
 /* SBCP message header format */
 typedef struct
 {

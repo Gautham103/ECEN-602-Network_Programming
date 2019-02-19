@@ -15,22 +15,22 @@ int main (int argc,char *argv[])
 
     if (argc != 4)
     {
-        printf ("ERROR: Please provide User name, IP address and port number\n");
+        DEBUG_CLIENT_MSG ("ERROR: Please provide User name, IP address and port number\n");
         return 0;
     }
 
     pcIpAddress = argv[2];
     pcUserName = argv[1];
-    printf ("CLIENT: User Name is %s \n", pcUserName);
-    printf ("CLIENT: IP Address is %s \n", pcIpAddress);
-    printf ("CLIENT: Port number is %d \n", port_number);
+    DEBUG_CLIENT_MSG ("CLIENT: User Name is %s \n", pcUserName);
+    DEBUG_CLIENT_MSG ("CLIENT: IP Address is %s \n", pcIpAddress);
+    DEBUG_CLIENT_MSG ("CLIENT: Port number is %d \n", port_number);
 
     bzero (&hints, sizeof(struct addrinfo));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
 
     if((iRet = getaddrinfo (pcIpAddress, argv[3], &hints, &result))!=0)
-        printf("getaddrinfo error for %s, %d; %s", pcIpAddress, port_number, gai_strerror(iRet));
+        DEBUG_CLIENT_MSG("getaddrinfo error for %s, %d; %s", pcIpAddress, port_number, gai_strerror(iRet));
 
     tempresult = result;
 
@@ -43,7 +43,7 @@ int main (int argc,char *argv[])
 
         if (connect (iSocket_fd, result->ai_addr, result->ai_addrlen) == 0)
         {
-            printf("connection ok!\n"); /* success*/
+            DEBUG_CLIENT_MSG("connection ok!\n"); /* success*/
             break;
         }
         else
@@ -77,17 +77,17 @@ int main (int argc,char *argv[])
     {
         perror ("ERROR: Writen failed to send data");
     }
-    printf("The join message has been sent successfully\n");
+    DEBUG_CLIENT_MSG("The join message has been sent successfully\n");
     if (psMessage != NULL)
     free (psMessage);
 
-    printf("Connection is Established with the Server...\n");
+    DEBUG_CLIENT_MSG("Connection is Established with the Server...\n");
     FD_SET(0, &fdRead_Set);              // add user input from keyboard to the Read_FDs set
     FD_SET(iSocket_fd, &fdRead_Set); // add sockfd to the Read_FDs set
     while(1)
     {
         fdMax = iSocket_fd;
-        printf("Waiting in the select \n");
+        DEBUG_CLIENT_MSG("Waiting in the select \n");
         if (select (fdMax + 1, &fdRead_Set, NULL, NULL, NULL) == -1)
         {
             perror("ERR: Select Error");
@@ -96,7 +96,7 @@ int main (int argc,char *argv[])
 
         if (FD_ISSET(0, &fdRead_Set))
         {
-            printf("got msg from stdin \n");
+            DEBUG_CLIENT_MSG("got msg from stdin \n");
                 bzero(acChatData, PAYLOAD_SIZE);
                 fgets(acChatData, PAYLOAD_SIZE, stdin);
                 uiChatLength = strlen(acChatData) - 1;
@@ -118,7 +118,7 @@ int main (int argc,char *argv[])
                 psMessage->sMsgAttribute.uiLength = 524;
                 bzero (psMessage->sMsgAttribute.acPayload, sizeof(psMessage->sMsgAttribute.acPayload));
                 strcpy (psMessage->sMsgAttribute.acPayload, acChatData);
-                printf("psMessage->sMsgAttribute.acPayload %s\n", psMessage->sMsgAttribute.acPayload);
+                DEBUG_CLIENT_MSG("psMessage->sMsgAttribute.acPayload %s\n", psMessage->sMsgAttribute.acPayload);
 
                 // Sending SEND message to server
                 iRet = send(iSocket_fd, (sbcp_message_t *)psMessage, sizeof(sbcp_message_t), 0);
@@ -133,7 +133,7 @@ int main (int argc,char *argv[])
 
         if (FD_ISSET(iSocket_fd, &fdRead_Set))
         {
-            printf("got msg from server\n");
+            DEBUG_CLIENT_MSG("got msg from server\n");
             psMessage = (sbcp_message_t *)malloc (sizeof (sbcp_message_t));
             bzero (psMessage, sizeof (sbcp_message_t));
             recv(iSocket_fd, (sbcp_message_t *)psMessage, sizeof(sbcp_message_t), 0);
@@ -142,7 +142,7 @@ int main (int argc,char *argv[])
             {
                 if((psMessage->sMsgAttribute.acPayload != NULL || psMessage->sMsgAttribute.acPayload !='\0'))
                 {
-                    printf("%s", psMessage->sMsgAttribute.acPayload);
+                    DEBUG_CLIENT_MSG("%s", psMessage->sMsgAttribute.acPayload);
                 }
             }
 
@@ -150,7 +150,7 @@ int main (int argc,char *argv[])
             {
                 if((psMessage->sMsgAttribute.acPayload != NULL || psMessage->sMsgAttribute.acPayload !='\0'))
                 {
-                    printf("NAK received from the server: %s",psMessage->sMsgAttribute.acPayload);
+                    DEBUG_CLIENT_MSG("NAK received from the server: %s",psMessage->sMsgAttribute.acPayload);
                     if (psMessage != NULL)
                         free (psMessage);
                     exit (2);
