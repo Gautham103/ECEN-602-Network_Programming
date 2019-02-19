@@ -87,14 +87,16 @@ int main (int argc,char *argv[])
     while(1)
     {
         fdMax = iSocket_fd;
+        printf("Waiting in the select \n");
         if (select (fdMax + 1, &fdRead_Set, NULL, NULL, NULL) == -1)
         {
             perror("ERR: Select Error");
             exit(6);
         }
 
-        if (FD_ISSET(STDIN_FD, &fdRead_Set))
+        if (FD_ISSET(0, &fdRead_Set))
         {
+            printf("got msg from stdin \n");
                 bzero(acChatData, PAYLOAD_SIZE);
                 fgets(acChatData, PAYLOAD_SIZE, stdin);
                 uiChatLength = strlen(acChatData) - 1;
@@ -116,6 +118,7 @@ int main (int argc,char *argv[])
                 psMessage->sMsgAttribute.uiLength = 524;
                 bzero (psMessage->sMsgAttribute.acPayload, sizeof(psMessage->sMsgAttribute.acPayload));
                 strcpy (psMessage->sMsgAttribute.acPayload, acChatData);
+                printf("psMessage->sMsgAttribute.acPayload %s\n", psMessage->sMsgAttribute.acPayload);
 
                 // Sending SEND message to server
                 iRet = send(iSocket_fd, (sbcp_message_t *)psMessage, sizeof(sbcp_message_t), 0);
@@ -130,6 +133,7 @@ int main (int argc,char *argv[])
 
         if (FD_ISSET(iSocket_fd, &fdRead_Set))
         {
+            printf("got msg from server\n");
             psMessage = (sbcp_message_t *)malloc (sizeof (sbcp_message_t));
             bzero (psMessage, sizeof (sbcp_message_t));
             recv(iSocket_fd, (sbcp_message_t *)psMessage, sizeof(sbcp_message_t), 0);
@@ -156,6 +160,8 @@ int main (int argc,char *argv[])
                 free (psMessage);
 
         }
+        FD_SET(0, &fdRead_Set);
+        FD_SET(iSocket_fd, &fdRead_Set);
 
     }
 }
