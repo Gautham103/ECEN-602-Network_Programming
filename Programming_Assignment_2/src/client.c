@@ -72,7 +72,7 @@ int main (int argc,char *argv[])
     strcpy (psMessage->sMsgAttribute.acPayload, pcUserName);
 
     // Sending JOIN message to server
-    iRet = write (iSocket_fd, (sbcp_message_t *)psMessage, sizeof(psMessage));
+    iRet = send (iSocket_fd, (sbcp_message_t *)psMessage, sizeof(sbcp_message_t), 0);
     if (iRet < 0)
     {
         perror ("ERROR: Writen failed to send data");
@@ -118,7 +118,7 @@ int main (int argc,char *argv[])
                 strcpy (psMessage->sMsgAttribute.acPayload, acChatData);
 
                 // Sending SEND message to server
-                iRet = write(iSocket_fd, (sbcp_message_t *)psMessage, sizeof(sbcp_message_t));
+                iRet = send(iSocket_fd, (sbcp_message_t *)psMessage, sizeof(sbcp_message_t), 0);
                 if (iRet < 0)
                 {
                     perror ("ERROR: Writen failed to send data");
@@ -132,7 +132,7 @@ int main (int argc,char *argv[])
         {
             psMessage = (sbcp_message_t *)malloc (sizeof (sbcp_message_t));
             bzero (psMessage, sizeof (sbcp_message_t));
-            read(iSocket_fd, (sbcp_message_t *)psMessage, sizeof(sbcp_message_t));
+            recv(iSocket_fd, (sbcp_message_t *)psMessage, sizeof(sbcp_message_t), 0);
 
             if(psMessage->sMsgHeader.uiType == FWD && psMessage->sMsgAttribute.uiType == MESSAGE)
             {

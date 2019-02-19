@@ -20,6 +20,7 @@ int main(int argc, char * argv[]){
     fd_set set2;
     int max_fd;
     int dup_fd;
+    int k;
 
     // All the user related data
     struct user_data * clients;
@@ -58,7 +59,7 @@ int main(int argc, char * argv[]){
                         max_fd = new_client_fd > max_fd ? new_client_fd : max_fd;
                         FD_SET(new_client_fd, &set1);
                     	sbcp_message_t * join_message = get_join_message(clients[client_count].user_name);
-                        for(int k=0; k <= max_fd; k++)
+                        for(k=0; k <= max_fd; k++)
                         {
                             if (FD_ISSET(k, &set1)) {
 
@@ -78,7 +79,7 @@ int main(int argc, char * argv[]){
                 {
                     broadcast_message(socket_fd, socket_itr, clients, max_fd, &set1, &client_count);
                 }
-                
+
             }
         }
     }

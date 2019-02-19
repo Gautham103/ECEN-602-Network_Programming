@@ -62,11 +62,12 @@ int accept_connection(struct sockaddr_in * client_addresses, int client_count, i
 }
 
 int check_name(char * name, int client_count, int max_client, struct user_data * clients){
+    int i;
     if(client_count == max_client)
     {
         return -1;
     }
-    for(int i=0; i <client_count; i++)
+    for(i=0; i <client_count; i++)
     {
         if(strcmp(name, clients[i].user_name) == 0)
         {
@@ -77,6 +78,7 @@ int check_name(char * name, int client_count, int max_client, struct user_data *
 }
 
 void send_ack_message(int new_client_fd, int client_count, struct user_data * clients){
+    int i;
 	sbcp_message_t ack_message;
     sbcp_header_t ack_header;
     sbcp_attribute_t ack_attribute;
@@ -90,7 +92,7 @@ void send_ack_message(int new_client_fd, int client_count, struct user_data * cl
     msg[0] = (char)(((int)'0')+ client_count);
     msg[1] = ' ';
     msg[2] = '\0';
-    for(int i=0; i < client_count-1; i++)
+    for(i=0; i < client_count-1; i++)
     {
         strcat(msg,clients[i].user_name);
         if(i < (client_count-1))
@@ -178,6 +180,7 @@ void remove_client(struct user_data * clients, int socket_fd, int client_count)
 void broadcast_message(int listening_fd, int socket_fd, struct user_data * clients, int max_fd, fd_set * set1, int *client_count){
 
     sbcp_message_t message_from_client;
+    int index, j;
 	int recv_bytes = recv(socket_fd, (sbcp_message_t *) &message_from_client, sizeof(sbcp_message_t), 0);
 	if(recv_bytes <= 0)
 	{
@@ -186,14 +189,14 @@ void broadcast_message(int listening_fd, int socket_fd, struct user_data * clien
 			printf("Connection closed by by socket %d", socket_fd);
 			sbcp_message_t * hung_message;
 
-			for(int index=0; index <= (*client_count); index++)
+			for(index=0; index <= (*client_count); index++)
 			{
 				if(clients[index].socket_fd == socket_fd){
 					hung_message = get_hung_message(clients[index].user_name);
 					break;
 				}
 			}
-			for(int j = 0; j <=max_fd; j++)
+			for(j = 0; j <=max_fd; j++)
 			{
 				if(FD_ISSET(j, set1))
 				{
@@ -221,14 +224,14 @@ void broadcast_message(int listening_fd, int socket_fd, struct user_data * clien
 	else
 	{
         // Messages
-	    
+
 	    sbcp_message_t message_to_client;
-	    
+
 		message_to_client.sMsgHeader.uiType = 3;
 		message_to_client.sMsgHeader.uiVrsn = 3;
 		message_to_client.sMsgAttribute.uiType= 4;
 
-		for(int index=0; index <= (*client_count); index++)
+		for(index=0; index <= (*client_count); index++)
 		{
 			if(clients[index].socket_fd == socket_fd)
 			{
@@ -238,7 +241,7 @@ void broadcast_message(int listening_fd, int socket_fd, struct user_data * clien
                 break;
 			}
 		}
-		for(int index=0; index <= (*client_count); index++)
+		for(index=0; index <= (*client_count); index++)
 		{
 			if (FD_ISSET(index, set1)) {
 				if(index != listening_fd && index!=socket_fd)
