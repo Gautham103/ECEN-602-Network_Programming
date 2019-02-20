@@ -1,8 +1,8 @@
 
-# TCP Echo Server and Client
+# Simple Broadcast Chat Protocol (SBCP)
 
 
-ECEN 602 Network Programming Assignment 1
+ECEN 602 Network Programming Assignment 2
 -------------------------------------------------------------------------------------------------------------------------
 
 Team Number - 8
@@ -12,15 +12,15 @@ Member 2 - Gautham Srinivasan ( UIN 927008557)
 ------------------------------------------------------------------------------------------------------------------------
 Description:
 
-In this project, we have implemented an RFC 862 echo protocol. The server program accepts requests from the clients, and whatever the client sends to the server is echoed back to the client. When the client terminates, the server closes the connection with the client.
+In this project, we have implemented a Simple Broadcast Chat Protocol (SBCP) protocol. The server provides a single chat room which accepts connections only from a finite number of clients. The client send JOIN request to the server and server can accept the connection and send ACK message or it reject it by sending a NACK message. To broadcast the message to other user the client uses send command and server uses FWD message to forward message to other clients. In addition, the server send list of connected user to the newly connected user. It also send message to other connected clients when a new user joins or an existing user drop the chat.
 
-Server and makefile are implemented by Amit Rawat.
+Server.c, helper.c and makefile are implemented by Amit Rawat.
 Client, read/write functions and test cases are implemented by Gautham Srinivasan.
 
 --------------------------------------------------------------------------------------------------------------------------
 Directory Structure:
 
-bin - contains the binary echo(client) and echos(server)
+bin - contains the binary client and server
 include - contains the file common.h
 obj - contains the object files of server.c, common.c, and client.c.
 src - contains the source file.
