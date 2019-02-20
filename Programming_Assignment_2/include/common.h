@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <math.h>
 
 #define QUEUE_SIZE 50
 #define BUFFER_SIZE 20
@@ -103,7 +104,7 @@ struct user_data{
 
 
 int create_socket();
-void set_server_address(struct sockaddr_in *server_address, int port);
+void set_server_address(struct sockaddr_in *server_address, char * ip, int port);
 void bind_server(int socket_fd, struct sockaddr_in server_address);
 void start_listening(int socket_fd);
 

@@ -13,11 +13,11 @@ int create_socket(){
     return socket_fd;
 }
 
-void set_server_address(struct sockaddr_in *server_address, int port)
+void set_server_address(struct sockaddr_in *server_address, char * ip, int port)
 {
     bzero(server_address, sizeof(*server_address));
     (*server_address).sin_family = AF_INET;
-    (*server_address).sin_addr.s_addr = htonl(INADDR_ANY);
+    (*server_address).sin_addr.s_addr = inet_addr(ip);
     (*server_address).sin_port = htons(port);
 }
 
@@ -89,13 +89,14 @@ void send_ack_message(int new_client_fd, int client_count, struct user_data * cl
     ack_attribute.uiType = 4;
 
     char msg[512];
-    msg[0] = (char)(((int)'0')+ client_count);
-    msg[1] = ' ';
-    msg[2] = '\0';
+    char client_num[50];
+    sprintf(client_num, "%d", client_count);
+    strcpy(msg, client_num);
+    strcat(msg," ");
     for(i=0; i < client_count-1; i++)
     {
         strcat(msg,clients[i].user_name);
-        if(i < (client_count-1))
+        if(i < (client_count-2))
         {
             strcat(msg, ",");
         }
@@ -122,7 +123,7 @@ void send_nack_message(int new_client_fd, int client_count, struct user_data * c
 
     if(code == 1)
     {
-        strcpy(msg,"Ran into some anomaly...please check if username or wait till chatroom is free\n");
+        strcpy(msg,"Ran into some anomaly...please try changing username or wait till chatroom is free\n");
     }
 
     nack_attribute.uiLength = strlen(msg);
@@ -146,7 +147,7 @@ int join_message_process(int new_client_fd, int *client_count, int max_client, s
     strcpy(name, join_message_attr.acPayload);
     if(check_name(name, *client_count, max_client, clients) == -1)
     {
-        printf("User name already exist.\n");
+        printf("User name already exist or Chat romm is full.\n");
         send_nack_message(new_client_fd, *client_count, clients,1);
         return -1;
     }
