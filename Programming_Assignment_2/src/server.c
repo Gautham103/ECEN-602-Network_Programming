@@ -7,12 +7,12 @@ int main(int argc, char * argv[]){
     }
 
     // Variable decleration
-    int port = atoi(argv[1]);
+    int port = atoi(argv[2]);
     int socket_fd = create_socket();
     struct sockaddr_in server_address, *client_addresses;
     int socket_itr;
     // Maximum number of connection
-    int max_client = atoi(argv[2]);
+    int max_client = atoi(argv[3]);
     int client_count = 0;
 
     // Variables for select

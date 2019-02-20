@@ -71,7 +71,7 @@ int check_name(char * name, int client_count, int max_client, struct user_data *
     {
         if(strcmp(name, clients[i].user_name) == 0)
         {
-            return -1;
+            return -2;
         }
     }
     return 0;
@@ -120,9 +120,13 @@ void send_nack_message(int new_client_fd, int client_count, struct user_data * c
 
     nack_attribute.uiType = 1;
 
-    if(code == 1)
+    if(code == -1)
     {
-        strcpy(msg,"Ran into some anomaly...please check if username or wait till chatroom is free\n");
+        strcpy(msg,"Max clients are already present. Wait till chatroom is free\n");
+    }
+    else if (code == -2)
+    {
+        strcpy(msg,"Duplicate username entered. Please enter unique username\n");
     }
 
     nack_attribute.uiLength = strlen(msg);
@@ -143,11 +147,13 @@ int join_message_process(int new_client_fd, int *client_count, int max_client, s
     recv(new_client_fd,(struct message *) &join_message,sizeof(join_message),0);
     join_message_attr = join_message.sMsgAttribute;
     char name[16];
+    int ret = 0;
     strcpy(name, join_message_attr.acPayload);
-    if(check_name(name, *client_count, max_client, clients) == -1)
+    ret = check_name(name, *client_count, max_client, clients);
+    if(ret < 0)
     {
-        printf("User name already exist.\n");
-        send_nack_message(new_client_fd, *client_count, clients,1);
+        printf("Sending NAK.\n");
+        send_nack_message(new_client_fd, *client_count, clients,ret);
         return -1;
     }
     else
@@ -237,13 +243,13 @@ void broadcast_message(int listening_fd, int socket_fd, struct user_data * clien
 			if(clients[index].socket_fd == socket_fd)
 			{
 				strcpy(message_to_client.sMsgAttribute.acPayload, clients[index].user_name);
-                strcat(message_to_client.sMsgAttribute.acPayload, ": ");
                 if (message_from_client.sMsgHeader.uiType == IDLE)
                 {
-                    strcat(message_to_client.sMsgAttribute.acPayload, "IDLE");
+                    strcat(message_to_client.sMsgAttribute.acPayload, " is idle");
                 }
                 else
                 {
+                    strcat(message_to_client.sMsgAttribute.acPayload, ": ");
                     strcat(message_to_client.sMsgAttribute.acPayload, message_from_client.sMsgAttribute.acPayload);
                 }
                 strcat(message_to_client.sMsgAttribute.acPayload,"\n");
