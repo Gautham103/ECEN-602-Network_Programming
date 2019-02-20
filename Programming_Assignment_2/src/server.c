@@ -1,12 +1,13 @@
 #include "common.h"
 
 int main(int argc, char * argv[]){
-    if(argc < 2) {
-        printf("Input Error: Please provide port address as commoand line argument\n");
+    if(argc < 4) {
+        printf("Input Error: Please provide command line argument in format IP Port Maximum_Users\n");
         exit(1);
     }
 
     // Variable decleration
+    char * ip = argv[1];
     int port = atoi(argv[2]);
     int socket_fd = create_socket();
     struct sockaddr_in server_address, *client_addresses;
@@ -25,7 +26,7 @@ int main(int argc, char * argv[]){
     struct user_data * clients;
 
     // Initialization
-    set_server_address(&server_address, port);
+    set_server_address(&server_address, ip, port);
     bind_server(socket_fd, server_address);
     start_listening(socket_fd);
 

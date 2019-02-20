@@ -13,11 +13,11 @@ int create_socket(){
     return socket_fd;
 }
 
-void set_server_address(struct sockaddr_in *server_address, int port)
+void set_server_address(struct sockaddr_in *server_address, char * ip, int port)
 {
     bzero(server_address, sizeof(*server_address));
     (*server_address).sin_family = AF_INET;
-    (*server_address).sin_addr.s_addr = htonl(INADDR_ANY);
+    (*server_address).sin_addr.s_addr = inet_addr(ip);
     (*server_address).sin_port = htons(port);
 }
 
@@ -89,13 +89,14 @@ void send_ack_message(int new_client_fd, int client_count, struct user_data * cl
     ack_attribute.uiType = 4;
 
     char msg[512];
-    msg[0] = (char)(((int)'0')+ client_count);
-    msg[1] = ' ';
-    msg[2] = '\0';
+    char client_num[50];
+    sprintf(client_num, "%d", client_count);
+    strcpy(msg, client_num);
+    strcat(msg," ");
     for(i=0; i < client_count-1; i++)
     {
         strcat(msg,clients[i].user_name);
-        if(i < (client_count-1))
+        if(i < (client_count-2))
         {
             strcat(msg, ",");
         }
@@ -198,7 +199,7 @@ void broadcast_message(int listening_fd, int socket_fd, struct user_data * clien
 			printf("Connection closed by by socket %d", socket_fd);
 			sbcp_message_t * hung_message;
 
-			for(index=0; index <= (*client_count); index++)
+			for(index=0; index < (*client_count); index++)
 			{
 				if(clients[index].socket_fd == socket_fd){
 					hung_message = get_hung_message(clients[index].user_name);
