@@ -23,8 +23,11 @@ Client, read/write functions and test cases are implemented by Gautham Srinivasa
 Directory Structure:
 
 bin - contains the binary client and server
+
 include - contains the file common.h
+
 obj - contains the object files of server.c, common.c, and client.c.
+
 src - contains the source file.
 
 --------------------------------------------------------------------------------------------------------------------------
