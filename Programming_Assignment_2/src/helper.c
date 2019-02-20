@@ -192,7 +192,7 @@ void broadcast_message(int listening_fd, int socket_fd, struct user_data * clien
 			printf("Connection closed by by socket %d", socket_fd);
 			sbcp_message_t * hung_message;
 
-			for(index=0; index <= (*client_count); index++)
+			for(index=0; index < (*client_count); index++)
 			{
 				if(clients[index].socket_fd == socket_fd){
 					hung_message = get_hung_message(clients[index].user_name);
