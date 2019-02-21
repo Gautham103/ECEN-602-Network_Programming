@@ -74,6 +74,11 @@ It contains all the function declaration and header files used across the code.
 
 --------------------------------------------------------------------------------------------------------------------------
 Running the code:
-1. 
+1. Go to the directory ./Programming_Assignment_2
+2. Run the command: make clean
+3. Run the command: make all
+4. Go to directory ./bin
+5. For starting server: ./server IP_ADDRESS PORT MAXIMUM_USER
+6. To start the client: ./client CLIENT_NAME IP_ADDRESS PORT
 
 
