@@ -50,8 +50,11 @@ Functions Implemented:
 File Name: server.c
 Usage:
 1) It creates a socket and starts listening on that socket.
-2) It accepts connection from the client. After accepting connection, it forks a new process to serve the client. It also handles zombie processes.
-3) After client exits it closes connection with the client.
+2) It processes the connection from the client.
+3) If the connection is accepted then a ACK message is sent to the client.
+4) If the connection is rejected then a NACK message is sent to the client.
+5) It also forward the message received from one client to another client.
+6) After client exits it closes connection with the client.
 ---------------------------------------------------------------------------------------------------------------------------
 File Name: client.c
 Usage:
