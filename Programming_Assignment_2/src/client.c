@@ -8,13 +8,16 @@ int main (int argc,char *argv[])
     int              iSocket_fd = -1, iRet = -1, port_number = -1;
     char             acChatData[PAYLOAD_SIZE];
     char            *pcUserName, *pcIpAddress;
-    struct  addrinfo hints ,*result, *tempresult;
     fd_set           fdRead_Set;
     int              fdMax;
     sbcp_message_t  *psMessage = NULL;
     unsigned int     uiChatLength;
     pthread_attr_t   sThreadAttr;
     pthread_t        iThreadId = 0;
+    struct sockaddr_in client_address_ipv4;
+    struct sockaddr_in6 client_address_ipv6;
+    struct addrinfo hint, *res = NULL;
+    int ret;
 
     port_number = atoi(argv[3]);
 
@@ -30,37 +33,53 @@ int main (int argc,char *argv[])
     printf ("CLIENT: IP Address is %s \n", pcIpAddress);
     printf ("CLIENT: Port number is %d \n", port_number);
 
-    bzero (&hints, sizeof(struct addrinfo));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
+    memset(&hint, '\0', sizeof hint);
 
-    if((iRet = getaddrinfo (pcIpAddress, argv[3], &hints, &result))!=0)
-        printf("getaddrinfo error for %s, %d; %s\n", pcIpAddress, port_number, gai_strerror(iRet));
+    hint.ai_family = PF_UNSPEC;
+    hint.ai_flags = AI_NUMERICHOST;
 
-    tempresult = result;
-
-    do
+    // Figure out whether the address is IPv4 or IPv6 and the call the APIs accordingly
+    ret = getaddrinfo(pcIpAddress, NULL, &hint, &res);
+    if (ret)
     {
-        iSocket_fd = socket (result->ai_family, result->ai_socktype, result->ai_protocol);
+        puts("Invalid address");
+        puts(gai_strerror(ret));
+        return 1;
+    }
+    if(res->ai_family == AF_INET)
+    {
+        iSocket_fd = create_socket(true);
+        memset (&client_address_ipv4, 0, sizeof client_address_ipv4);
+        client_address_ipv4.sin_family = AF_INET;
+        client_address_ipv4.sin_port = htons (port_number);
+        iRet = inet_pton (AF_INET, pcIpAddress, &(client_address_ipv4.sin_addr));
+        if (iRet < 0)
+            perror ("ERROR: IP conversion failed");
 
-        if (iSocket_fd < 0)
-            continue;  /*ignore this returned Ip addr*/
+        /* Connect to server */
+        iRet = connect (iSocket_fd, (struct sockaddr *)&client_address_ipv4, sizeof(client_address_ipv4));
+        if (iRet < 0)
+            perror ("ERROR: Socket connection failed");
+    }
+    else if (res->ai_family == AF_INET6)
+    {
+        iSocket_fd = create_socket(false);
+        memset (&client_address_ipv6, 0, sizeof client_address_ipv4);
+        client_address_ipv6.sin6_family = AF_INET6;
+        client_address_ipv6.sin6_port = htons (port_number);
+        inet_pton(AF_INET6, pcIpAddress, &client_address_ipv6.sin6_addr);
 
-        if (connect (iSocket_fd, result->ai_addr, result->ai_addrlen) == 0)
-        {
-            printf("connection ok!\n"); /* success*/
-            break;
-        }
-        else
-        {
-            perror("connection NOT ok\n");
-        }
+        /* Connect to server */
+        iRet = connect (iSocket_fd, (struct sockaddr *)&client_address_ipv6, sizeof(client_address_ipv6));
+        if (iRet < 0)
+            perror ("ERROR: Socket connection failed");
+    }
+    else
+    {
+        printf("%s is an is unknown address format %d\n",argv[1],res->ai_family);
+    }
 
-
-        close (iSocket_fd);/*ignore this one*/
-    } while ((result=result->ai_next)!= NULL);
-
-    freeaddrinfo(tempresult);
+   freeaddrinfo(res);
 
     psMessage = (sbcp_message_t *)malloc (sizeof (sbcp_message_t));
     bzero (psMessage, sizeof (sbcp_message_t));
@@ -155,6 +174,7 @@ int main (int argc,char *argv[])
             if((psMessage->sMsgHeader.uiType == FWD || psMessage->sMsgHeader.uiType == ACK)
                     && psMessage->sMsgAttribute.uiType == MESSAGE)
             {
+                // FWD/ACK Message received. Display the message
                 if((psMessage->sMsgAttribute.acPayload != NULL || psMessage->sMsgAttribute.acPayload !='\0'))
                 {
                     printf("%s\n", psMessage->sMsgAttribute.acPayload);
@@ -163,6 +183,7 @@ int main (int argc,char *argv[])
 
             if(psMessage->sMsgHeader.uiType == NAK && psMessage->sMsgAttribute.uiType == REASON)
             {
+                // NAK Message received. Display the reason
                 if((psMessage->sMsgAttribute.acPayload != NULL || psMessage->sMsgAttribute.acPayload !='\0'))
                 {
                     printf("NAK received from the server: %s\n",psMessage->sMsgAttribute.acPayload);

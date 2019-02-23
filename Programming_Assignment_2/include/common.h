@@ -103,9 +103,11 @@ struct user_data{
 };
 
 
-int create_socket();
+int create_socket(bool isIPv4);
 void set_server_address(struct sockaddr_in *server_address, char * ip, int port);
+void set_server_address_ipv6(struct sockaddr_in6 *server_address, char * ip, int port);
 void bind_server(int socket_fd, struct sockaddr_in server_address);
+void bind_server_ipv6(int socket_fd, struct sockaddr_in6 server_address);
 void start_listening(int socket_fd);
 
 // My functions

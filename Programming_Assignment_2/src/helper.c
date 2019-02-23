@@ -1,7 +1,16 @@
 #include "common.h"
 
-int create_socket(){
-    int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+int create_socket(bool isIPv4)
+{
+    int socket_fd = -1;
+    if (isIPv4 ==  true)
+    {
+        socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+    }
+    else
+    {
+        socket_fd = socket(AF_INET6, SOCK_STREAM, 0);
+    }
     if(socket_fd == -1)
     {
         perror("Socket Create Faild");
@@ -21,7 +30,30 @@ void set_server_address(struct sockaddr_in *server_address, char * ip, int port)
     (*server_address).sin_port = htons(port);
 }
 
+void set_server_address_ipv6(struct sockaddr_in6 *server_address, char * ip, int port)
+{
+    bzero(server_address, sizeof(*server_address));
+    (*server_address).sin6_family = AF_INET6;
+    if (inet_pton(AF_INET6, ip, &(*server_address).sin6_addr) <= 0)
+        printf("inet_pton error for %s", ip);
+    (*server_address).sin6_port = htons(port);
+}
+
 void bind_server(int socket_fd, struct sockaddr_in server_address)
+{
+    int val = bind(socket_fd, (struct sockaddr *) &server_address, sizeof(server_address));
+    if(val != 0)
+    {
+        perror("Socket Bind Failed");
+        exit(-1);
+    }
+    else
+    {
+        printf("Socket is binded Successfully....\n");
+    }
+}
+
+void bind_server_ipv6(int socket_fd, struct sockaddr_in6 server_address)
 {
     int val = bind(socket_fd, (struct sockaddr *) &server_address, sizeof(server_address));
     if(val != 0)
