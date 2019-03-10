@@ -39,9 +39,9 @@
 
 #define NETASCII 1
 #define OCTET 2
-
-typedef union{
-    uint16_t op_code;
+typedef union tftp_message tftp_message_t;
+union tftp_message{
+    uint16_t uiOpcode;
 
     struct{
     	uint16_t uiOpcode;
@@ -49,23 +49,23 @@ typedef union{
     }tftp_request_message;
 
     struct{
-    	unit16_t uiOpcode;
+    	uint16_t uiOpcode;
     	uint16_t uiBlockNumber;
     }tftp_ack_message;
 
     struct{
-    	unit16_t uiOpcode;
-    	unit16_t uiBlockNumber;
-    	unit8_t data[FILE_SIZE];
+    	uint16_t uiOpcode;
+    	uint16_t uiBlockNumber;
+    	uint8_t data[FILE_SIZE];
     }tftp_data_message;
 
     struct{
-    	unit16_t uiOpcode;
+    	uint16_t uiOpcode;
     	uint16_t uiErrorCode;
     	uint8_t uiErrorData[FILE_SIZE]
     }tftp_error_message;
     
-}tftp_message_t;
+};
 
 int create_socket(bool isIPv4);
 void set_server_address(struct sockaddr_in *server_address, char * ip, int port);
@@ -74,5 +74,11 @@ void bind_server(int socket_fd, struct sockaddr_in server_address);
 void bind_server_ipv6(int socket_fd, struct sockaddr_in6 server_address);
 void start_listening(int socket_fd);
 int accept_connection(struct sockaddr_in * client_addresses, int client_count, int socket_fd);
-
+ssize_t send_message(int write_fd, tftp_message_t * message, size_t size, struct sockaddr_in *socket_addr, socklen_t socket_len);
+void update_message(char * message, int index, int new_line);
+ssize_t send_data(int write_fd, struct sockaddr_in * address, socklen_t socket_len, int mode, uint16_t uiBlockNumber, uint8_t *data, ssize_t message_length);
+ssize_t send_ack(int write_fd, struct sockaddr_in * address, socklen_t socket_len, uint16_t uiBlockNumber);
+ssize_t send_error_message(int write_fd, int error_code, char * error_data, struct sockaddr_in * address, socklen_t socket_len);
+ssize_t receive_message(int receive_fd, tftp_message_t * recv_message, struct sockaddr_in * address, socklen_t *socket_len);
+void zombie_handler_func(int signum);
 #endif // COMMON_INCLUDED

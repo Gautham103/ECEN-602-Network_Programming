@@ -8,18 +8,14 @@ OBJDIR=obj
 serverDep=$(OBJDIR)/server.o $(OBJDIR)/helper.o 
 OUTPUTDIR=bin
 SERVER=server
-CLIENT=client
-all: $(SERVER) $(CLIENT)
+all: $(SERVER)
 
 $(SERVER): $(OBJECT)
 	$(CC) -o $(OUTPUTDIR)/$@ obj/helper.o obj/server.o 
-
-$(CLIENT): $(OBJECT)
-	$(CC) -o $(OUTPUTDIR)/$@ obj/helper.o obj/client.o -lpthread
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean 
 clean:
-	rm -f $(OBJDIR)/*.o $(OUTPUTDIR)/$(SERVER) $(OUTPUTDIR)/$(CLIENT)
+	rm -f $(OBJDIR)/*.o $(OUTPUTDIR)/$(SERVER)
