@@ -80,5 +80,7 @@ ssize_t send_data(int write_fd, int mode, uint16_t uiBlockNumber, uint8_t *data,
 ssize_t send_ack(int write_fd,uint16_t uiBlockNumber, struct sockaddr_in * address, socklen_t socket_len);
 ssize_t send_error_message(int write_fd, int error_code, char * error_data, struct sockaddr_in * address, socklen_t socket_len);
 ssize_t receive_message(int receive_fd, tftp_message_t * recv_message, struct sockaddr_in * address, socklen_t *socket_len);
+int get_mode (char *mode_checker);
 void zombie_handler_func(int signum);
+void handle_message(tftp_message_t *message, ssize_t msglen, struct sockaddr_in *client_socket, socklen_t socket_length);
 #endif // COMMON_INCLUDED
