@@ -28,7 +28,7 @@
 #define BUFFER_SIZE 20
 #define FILE_SIZE 512
 
-#define TIMEOUT 5
+#define TIMEOUT 4
 #define MAX_RETRIES 10
 
 #define RRQ_OPCODE 1
@@ -62,9 +62,8 @@ union tftp_message{
     struct{
     	uint16_t uiOpcode;
     	uint16_t uiErrorCode;
-    	uint8_t uiErrorData[FILE_SIZE]
+    	uint8_t uiErrorData[FILE_SIZE];
     }tftp_error_message;
-    
 };
 
 int create_socket(bool isIPv4);
@@ -76,8 +75,9 @@ void start_listening(int socket_fd);
 int accept_connection(struct sockaddr_in * client_addresses, int client_count, int socket_fd);
 ssize_t send_message(int write_fd, tftp_message_t * message, size_t size, struct sockaddr_in *socket_addr, socklen_t socket_len);
 void update_message(char * message, int index, int new_line);
-ssize_t send_data(int write_fd, struct sockaddr_in * address, socklen_t socket_len, int mode, uint16_t uiBlockNumber, uint8_t *data, ssize_t message_length);
-ssize_t send_ack(int write_fd, struct sockaddr_in * address, socklen_t socket_len, uint16_t uiBlockNumber);
+ssize_t send_data(int write_fd, int mode, uint16_t uiBlockNumber, uint8_t *data, ssize_t message_length,
+        struct sockaddr_in * address, socklen_t socket_len);
+ssize_t send_ack(int write_fd,uint16_t uiBlockNumber, struct sockaddr_in * address, socklen_t socket_len);
 ssize_t send_error_message(int write_fd, int error_code, char * error_data, struct sockaddr_in * address, socklen_t socket_len);
 ssize_t receive_message(int receive_fd, tftp_message_t * recv_message, struct sockaddr_in * address, socklen_t *socket_len);
 void zombie_handler_func(int signum);

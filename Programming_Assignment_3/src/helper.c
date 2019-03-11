@@ -94,7 +94,7 @@ int accept_connection(struct sockaddr_in * client_addresses, int client_count, i
 }
 
 ssize_t send_message(int write_fd, tftp_message_t * message, size_t size, struct sockaddr_in *socket_addr, socklen_t socket_len){
-	ssize_t data_sent = sendto(write_fd, message, size, 0, (struct sockaddr_in *) socket_addr, socket_len);
+	ssize_t data_sent = sendto(write_fd, message, size, 0, (struct sockaddr *) socket_addr, socket_len);
 	if(data_sent < 0)
 	{
 		perror("Error Sending Data:");
@@ -103,7 +103,8 @@ ssize_t send_message(int write_fd, tftp_message_t * message, size_t size, struct
 }
 
 void update_message(char * message, int index, int new_line){
-	for(int i = FILE_SIZE-1; i > index; i--){
+    int i;
+	for(i = FILE_SIZE-1; i > index; i--){
 		message[i] = message[i-1];
 	}
 	if(new_line == 0){
@@ -116,14 +117,15 @@ void update_message(char * message, int index, int new_line){
 	}
 }
 
-ssize_t send_data(int write_fd, struct sockaddr_in * address, socklen_t socket_len, int mode, uint16_t uiBlockNumber, uint8_t *data, ssize_t message_length){
+ssize_t send_data(int write_fd, int mode, uint16_t uiBlockNumber, uint8_t *data, ssize_t message_length, struct sockaddr_in * address, socklen_t socket_len){
 	char msg_body[FILE_SIZE];
 	tftp_message_t data_message;
 	int extra_char = 0;
 	int total_len = 0;
+    int index;
 	memcpy(msg_body, data, message_length);
 	if(mode == NETASCII){
-		for(int index=0; index <=FILE_SIZE-1; index++)
+		for(index=0; index <=FILE_SIZE-1; index++)
 		{
 			if(msg_body[index] == '\r'){
 				update_message(msg_body, index, 0);
@@ -143,7 +145,8 @@ ssize_t send_data(int write_fd, struct sockaddr_in * address, socklen_t socket_l
 	return send_message(write_fd, &data_message, total_len+4, address, socket_len);
 }
 
-ssize_t send_ack(int write_fd, struct sockaddr_in * address, socklen_t socket_len, uint16_t uiBlockNumber){
+ssize_t send_ack(int write_fd,uint16_t uiBlockNumber, struct sockaddr_in * address, socklen_t socket_len)
+{
 	tftp_message_t ack_message;
 	ack_message.uiOpcode = htons(ACK_OPCODE);
 	ack_message.tftp_ack_message.uiBlockNumber = htons(uiBlockNumber);
@@ -158,12 +161,12 @@ ssize_t send_error_message(int write_fd, int error_code, char * error_data, stru
 	}
 	error_msg.uiOpcode = htons(ERROR_OPCODE);
 	error_msg.tftp_error_message.uiErrorCode = htons(error_code);
-	strcpy(error_msg.tftp_error_message.uiErrorData, error_data);
+	strcpy((char *)error_msg.tftp_error_message.uiErrorData, error_data);
 	return send_message(write_fd, &error_msg, 5+strlen(error_data), address, socket_len);
 }
 
 ssize_t receive_message(int receive_fd, tftp_message_t * recv_message, struct sockaddr_in * address, socklen_t * socket_len){
-	ssize_t recv_msg_size = recvfrom(receive_fd, recv_message, sizeof(*recv_message), 0, (struct sockaddr_in *) address, socket_len);
+	ssize_t recv_msg_size = recvfrom(receive_fd, recv_message, sizeof(*recv_message), 0, (struct sockaddr *) address, socket_len);
 	if(recv_msg_size < 0 && errno !=EAGAIN){
 		perror("Error receiving message: ");
 	}
