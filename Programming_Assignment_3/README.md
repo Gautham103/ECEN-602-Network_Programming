@@ -1,8 +1,8 @@
 
-# Simple Broadcast Chat Protocol (SBCP)
+# TFTP Server Project
 
 
-ECEN 602 Network Programming Assignment 2
+ECEN 602 Network Programming Assignment 3
 -------------------------------------------------------------------------------------------------------------------------
 
 Team Number - 8
@@ -14,7 +14,7 @@ Member 2 - Gautham Srinivasan ( UIN 927008557)
 ------------------------------------------------------------------------------------------------------------------------
 Description:
 
-In this project, we have implemented a Simple Broadcast Chat Protocol (SBCP) protocol. The server provides a single chat room which accepts connections only from a finite number of clients. The client send JOIN request to the server and server can accept the connection and send ACK message or it reject it by sending a NACK message. To broadcast the message to other user the client uses send command and server uses FWD message to forward message to other clients. In addition, the server send list of connected user to the newly connected user. It also send message to other connected clients when a new user joins or an existing user drop the chat.
+In this project, we have implemented a UDP based TFTP protocol for file transfer. The server can transfer file in both modes ascii and binary modes. It also supports wrap around to transfer files above 32MB as a basic stop and wait protocol. A bonus feature is also implemented which support WRQ request which allows writing the file back to the server.
 
 Server.c, helper.c and makefile are implemented by Amit Rawat.
 Client.C, IPv6, IDLE feature and test cases are implemented by Gautham Srinivasan.
