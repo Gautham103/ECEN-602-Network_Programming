@@ -51,11 +51,13 @@ Functions Implemented:
 
 --------------------------------------------------------------------------------------------------------------------------
 Running the code:
-1. Go to the directory ./Programming_Assignment_2
-2. Run the command: make clean
-3. Run the command: make all
-4. Go to directory ./bin
-5. For starting server: ./server IP_ADDRESS PORT MAXIMUM_USER
-6. To start the client: ./client CLIENT_NAME IP_ADDRESS PORT
+1. sudo apt-get install tftp     - for installing tftp
+2. Go to the directory ./Programming_Assignment_3
+3. Run the command: make clean
+4. Run the command: make all
+5. Go to directory ./bin
+6. For starting server: ./server IP_ADDRESS PORT
+7. Put all the files to be sent to client in the ./bin directory
+8. 
 
 
