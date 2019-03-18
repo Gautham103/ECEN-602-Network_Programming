@@ -23,11 +23,11 @@ Gautham Srinivasan: Implemented some section of server.c and helper.c file.
 --------------------------------------------------------------------------------------------------------------------------
 Directory Structure:
 
-bin - contains the binary client and server
+bin - contains the binary server
 
 include - contains the file common.h
 
-obj - contains the object files of server.c, common.c, and client.c.
+obj - contains the object files of server.c, helper.c.
 
 src - contains the source file.
 
