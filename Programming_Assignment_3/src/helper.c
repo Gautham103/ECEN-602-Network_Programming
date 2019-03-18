@@ -102,19 +102,40 @@ ssize_t send_message(int write_fd, tftp_message_t * message, size_t size, struct
 	return data_sent;
 }
 
-void update_message(char * message, int index, int new_line){
-    int i;
-	for(i = FILE_SIZE-1; i > index; i--){
-		message[i] = message[i-1];
-	}
-	if(new_line == 0){
-		message[index+1] = '\0';
-	}
-	else
-	{
-		message[index] = '\r';
-		message[index+1] = '\n';
-	}
+FILE * create_temp_file(FILE *fd, char * temp_file_name){
+    srand(time(0));
+    int c = rand();
+    sprintf(temp_file_name, "temp_file_%d.txt", c);
+    printf ("The file name is %s", temp_file_name);    
+    FILE * temp_fd = fopen(temp_file_name, "w");
+    int ch;
+    int nextChar = -1;
+    while(1){
+        ch = getc(fd);
+        if(nextChar >= 0){
+            fputc(nextChar, temp_fd);
+            nextChar = -1;
+        }
+        if(ch == EOF){
+            if(ferror(temp_fd)){
+                perror("Error writing to Temp File");
+            }
+            break;
+        }
+        else if(ch == '\n'){
+            ch = '\r';
+            nextChar = '\n';
+        }
+        else if(ch == '\r'){
+            nextChar = '\0';
+        }
+        else{
+            nextChar = -1;
+        }
+        fputc(ch,temp_fd);
+    }
+    fclose(temp_fd);
+    return fopen(temp_file_name, "r");
 }
 
 ssize_t send_data(int write_fd, int mode, uint16_t uiBlockNumber, uint8_t *data, ssize_t message_length, struct sockaddr_in * address, socklen_t socket_len){
@@ -122,48 +143,10 @@ ssize_t send_data(int write_fd, int mode, uint16_t uiBlockNumber, uint8_t *data,
 	tftp_message_t data_message;
 	int extra_char = 0;
 	int total_len = 0;
-    int index=0;
-	memcpy(msg_body, data, message_length);
-	if(mode == NETASCII){
-		for(index=0; index <=FILE_SIZE-1; index++)
-		{
-			if(msg_body[index] == '\r'){
-                //printf("Return\n");
-				update_message(msg_body, index, 0);
-				index += 2;
-				extra_char++;
-			}
-			if(msg_body[index] == '\n'){
-                update_message(msg_body, index, 1);
-                //printf("New line\n");
-				index +=2;
-				extra_char++;
-			}
-		}
-        /*while(index <= FILE_SIZE-1){
-            if(msg_body[index] == '\r'){
-                printf("Return\n");
-				update_message(msg_body, index, 0);
-				index += 2;
-				extra_char++;
-			}
-			if(msg_body[index] == '\n'){
-                update_message(msg_body, index, 1);
-                printf("New line\n");
-				index +=2;
-				extra_char++;
-			}
-            else
-            {
-                index++;
-            }
-            
-        }*/
-	}
+    memcpy(msg_body, data, message_length);
 	total_len = extra_char+message_length;
 	data_message.uiOpcode = htons(DATA_OPCODE);
 	data_message.tftp_data_message.uiBlockNumber = htons(uiBlockNumber);
-    //printf("%s", msg_body);
 	memcpy(data_message.tftp_data_message.data, msg_body, total_len);
 	return send_message(write_fd, &data_message, total_len+4, address, socket_len);
 }
@@ -197,7 +180,7 @@ ssize_t receive_message(int receive_fd, tftp_message_t * recv_message, struct so
 }
 
 // Function for handling zombie process
-void zombie_handler_func(int signum)
+void zombie_handler_func(int sigtemp_fd)
 {
     wait(NULL);
 }
@@ -223,12 +206,14 @@ void handle_message(tftp_message_t *message, ssize_t msglen, struct sockaddr_in 
     uint16_t       block_number = 0;
     struct timeval tv;
     char          *file_name, *mode_checker, *end;
-    FILE          *fd;
+    FILE          *fd, *temp_fd;
     int            transfermode = 0;
     uint16_t       OpCode;
     uint8_t        data[512];
     int            retry_count;
     int            exit_flag = 0;
+    char           temp_file_name[50];
+
 
     // opening new socket to handle incoming request
 
@@ -290,9 +275,16 @@ void handle_message(tftp_message_t *message, ssize_t msglen, struct sockaddr_in 
 
     if (OpCode == RRQ_OPCODE)
     {
+        if (transfermode == NETASCII)
+        {
+            temp_fd = create_temp_file(fd,temp_file_name);
+            fclose (fd);
+            fd = temp_fd;
+        }
         while (!exit_flag)
         {
             data_length = fread(data, 1, sizeof(data), fd);
+            
             block_number++;
 
             if (data_length < 512)
@@ -466,6 +458,11 @@ void handle_message(tftp_message_t *message, ssize_t msglen, struct sockaddr_in 
 
     printf("Data transfer done successfully for %s:%u!\n", inet_ntoa(client_socket->sin_addr), ntohs(client_socket->sin_port));
     fclose(fd);
+    printf("\n%s", temp_file_name);
+    if(temp_file_name != NULL){
+        printf("%s", temp_file_name);
+        remove(temp_file_name);
+    }
     close(socket_fd);
     exit(0);
 }
