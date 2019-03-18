@@ -106,7 +106,6 @@ FILE * create_temp_file(FILE *fd, char * temp_file_name){
     srand(time(0));
     int c = rand();
     sprintf(temp_file_name, "temp_file_%d.txt", c);
-    printf ("The file name is %s", temp_file_name);    
     FILE * temp_fd = fopen(temp_file_name, "w");
     int ch;
     int nextChar = -1;
@@ -284,7 +283,6 @@ void handle_message(tftp_message_t *message, ssize_t msglen, struct sockaddr_in 
         while (!exit_flag)
         {
             data_length = fread(data, 1, sizeof(data), fd);
-            
             block_number++;
 
             if (data_length < 512)
@@ -458,9 +456,7 @@ void handle_message(tftp_message_t *message, ssize_t msglen, struct sockaddr_in 
 
     printf("Data transfer done successfully for %s:%u!\n", inet_ntoa(client_socket->sin_addr), ntohs(client_socket->sin_port));
     fclose(fd);
-    printf("\n%s", temp_file_name);
     if(temp_file_name != NULL){
-        printf("%s", temp_file_name);
         remove(temp_file_name);
     }
     close(socket_fd);
