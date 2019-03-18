@@ -122,25 +122,48 @@ ssize_t send_data(int write_fd, int mode, uint16_t uiBlockNumber, uint8_t *data,
 	tftp_message_t data_message;
 	int extra_char = 0;
 	int total_len = 0;
-    int index;
+    int index=0;
 	memcpy(msg_body, data, message_length);
 	if(mode == NETASCII){
 		for(index=0; index <=FILE_SIZE-1; index++)
 		{
 			if(msg_body[index] == '\r'){
+                //printf("Return\n");
 				update_message(msg_body, index, 0);
 				index += 2;
 				extra_char++;
 			}
 			if(msg_body[index] == '\n'){
+                update_message(msg_body, index, 1);
+                //printf("New line\n");
 				index +=2;
 				extra_char++;
 			}
 		}
+        /*while(index <= FILE_SIZE-1){
+            if(msg_body[index] == '\r'){
+                printf("Return\n");
+				update_message(msg_body, index, 0);
+				index += 2;
+				extra_char++;
+			}
+			if(msg_body[index] == '\n'){
+                update_message(msg_body, index, 1);
+                printf("New line\n");
+				index +=2;
+				extra_char++;
+			}
+            else
+            {
+                index++;
+            }
+            
+        }*/
 	}
 	total_len = extra_char+message_length;
 	data_message.uiOpcode = htons(DATA_OPCODE);
 	data_message.tftp_data_message.uiBlockNumber = htons(uiBlockNumber);
+    //printf("%s", msg_body);
 	memcpy(data_message.tftp_data_message.data, msg_body, total_len);
 	return send_message(write_fd, &data_message, total_len+4, address, socket_len);
 }
