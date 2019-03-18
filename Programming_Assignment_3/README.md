@@ -17,7 +17,8 @@ Description:
 In this project, we have implemented a UDP based TFTP protocol for file transfer. The server can transfer file in both modes ascii and binary modes. It also supports wrap around to transfer files above 32MB as a basic stop and wait protocol. A bonus feature is also implemented which support WRQ request which allows writing the file back to the server.
 
 Amit Rawat: Implemented some section of server.c and helper.c file.
-Client.C, IPv6, IDLE feature and test cases are implemented by Gautham Srinivasan.
+
+Gautham Srinivasan: Implemented some section of server.c and helper.c file.
 
 --------------------------------------------------------------------------------------------------------------------------
 Directory Structure:
