@@ -58,7 +58,7 @@ Running the code:
 4. Run the command: make all
 5. Go to directory ./bin
 6. For starting server: ./server IP_ADDRESS PORT
-7. Put all the files to be sent to client in the ./bin directory
+7. Put all the files to be sent to client in the ./bin directory and all the files to be sent to server in the client directory
 8. Run tftp client and connect it to the server.
 9. Run 'get file_name' to get file.
 
