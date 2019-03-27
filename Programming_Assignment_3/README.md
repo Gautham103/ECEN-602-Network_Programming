@@ -17,16 +17,17 @@ Description:
 In this project, we have implemented a UDP based TFTP protocol for file transfer. The server can transfer file in both modes ascii and binary modes. It also supports wrap around to transfer files above 32MB as a basic stop and wait protocol. A bonus feature is also implemented which support WRQ request which allows writing the file back to the server.
 
 Amit Rawat: Implemented some section of server.c and helper.c file.
-Client.C, IPv6, IDLE feature and test cases are implemented by Gautham Srinivasan.
+
+Gautham Srinivasan: Implemented some section of server.c and helper.c file.
 
 --------------------------------------------------------------------------------------------------------------------------
 Directory Structure:
 
-bin - contains the binary client and server
+bin - contains the binary server
 
 include - contains the file common.h
 
-obj - contains the object files of server.c, common.c, and client.c.
+obj - contains the object files of server.c, helper.c.
 
 src - contains the source file.
 
@@ -51,11 +52,14 @@ Functions Implemented:
 
 --------------------------------------------------------------------------------------------------------------------------
 Running the code:
-1. Go to the directory ./Programming_Assignment_2
-2. Run the command: make clean
-3. Run the command: make all
-4. Go to directory ./bin
-5. For starting server: ./server IP_ADDRESS PORT MAXIMUM_USER
-6. To start the client: ./client CLIENT_NAME IP_ADDRESS PORT
+1. sudo apt-get install tftp     - for installing tftp
+2. Go to the directory ./Programming_Assignment_3
+3. Run the command: make clean
+4. Run the command: make all
+5. Go to directory ./bin
+6. For starting server: ./server IP_ADDRESS PORT
+7. Put all the files to be sent to client in the ./bin directory and all the files to be sent to server in the client directory
+8. Run tftp client and connect it to the server.
+9. Run 'get file_name' to get file.
 
 
