@@ -143,11 +143,26 @@ int iFormat_Read_Request(char *pcRequest, char *pcHost, int *piPort,char *pcUrl,
     pcUri = pcUri + 5;
     strcpy (pcUrl,pcUri);
     strcpy (pcHost,pcUrl);
+    strcat (pcUrl, pcName);
 
     *piPort = 80;
     return iNum_Bytes_Ret;
 }
 
+int check_cache_entry (char *url)
+{
+    int index = -1;
+    int i = 0;
+    for (i = 0 ; i < 10 ; i++)
+    {
+        if (!strcmp (sCache_table[i].acUrl, url))
+        {
+            index = i;
+            break;
+        }
+    }
+    return index;
+}
 
 int iCheck_Cache_Entry_Hit(char *pcUrl)
 {
@@ -231,7 +246,7 @@ int iMonthCoverter(char *pcMonth)
     return iMonthNumber;
 }
 
-int iCheck_Cache_Entry_Expire(char *pcUrl,struct tm *timenow, int *piCacheNum)
+int iCheck_Cache_Entry_Expire(char *pcUrl,struct tm *timenow)
 {
     int i = 0, iRet;
     char acUpdatedTime[MAX_TIME_LENGTH];
@@ -243,7 +258,6 @@ int iCheck_Cache_Entry_Expire(char *pcUrl,struct tm *timenow, int *piCacheNum)
         }
     }
     memset(acUpdatedTime, 0, MAX_TIME_LENGTH);
-    *piCacheNum = i;
 
     sprintf(acUpdatedTime, "%s, %2d %s %4d %2d:%2d:%2d GMT", pcDay[timenow->tm_wday],timenow->tm_mday, pcMonth[timenow->tm_mon], timenow->tm_year+1900,timenow->tm_hour,timenow->tm_min,timenow->tm_sec);
 
@@ -288,13 +302,11 @@ void vSend_Error_Message(int iStatus, int iSocket_fd)
     static char* acBad_Request =
         "****************************************************************"
         "HTTP/1.0 400 Bad Request"
-        "Server could not understand the request due to invalid syntax."
         "****************************************************************";
 
     static char* acNot_Found =
         "****************************************************************"
         "HTTP/1.0 404 Not Found"
-        "Server could not recognize and locate the requested URL."
         "****************************************************************";
 
     memset(acErr_Msg, 0, 1024);

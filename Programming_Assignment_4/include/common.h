@@ -45,7 +45,6 @@ typedef struct
     char acLast_Modified_Time[MAX_TIME_LENGTH];
     char acExpiry[MAX_TIME_LENGTH];
     char acFilename[MAX_FILE_NAME_LENGTH];
-    char acBuffer_Name[MAX_NAME_LENGTH];
     int  iIs_filled;
 }sCache;
 
@@ -71,8 +70,9 @@ void zombie_handler_func(int signum);
 int iFormat_Read_Request(char *pcRequest, char *pcHost, int *piPort,char *pcUrl, char *pcName);
 int iCheck_Cache_Entry_Hit(char *pcUrl);
 int iMonthCoverter(char *pcMonth);
-int iCheck_Cache_Entry_Expire(char *pcUrl,struct tm *timenow, int *piCacheNum);
+int iCheck_Cache_Entry_Expire(char *pcUrl,struct tm *timenow);
 int iTime_Comparison_Func(char *pcOldTime, char *pcNewTime);
 void vSend_Error_Message(int iStatus, int iSocket_fd);
 int iHandle_Client_Message (int client_fd);
+int check_cache_entry (char *url);
 #endif // COMMON_INCLUDED

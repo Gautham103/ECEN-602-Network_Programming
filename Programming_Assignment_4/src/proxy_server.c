@@ -280,6 +280,21 @@ int iHandle_Client_Message (int client_fd)
     }
     close(client_fd);
     close(porxy_fd);
+
+    printf ("Printing Cache Table\n");
+    for (i = 0 ; i < 10 ; i++)
+    {
+        if (sCache_table[i].iIs_filled)
+        {
+            printf ("*******************************************************\n");
+            printf ("               Cache Entry Number %d \n", i + 1);
+            printf ("URL : %s\n", sCache_table[i].acUrl);
+            printf ("Last Modified Time : %s\n", sCache_table[i].acLast_Modified_Time);
+            printf ("Expiry : %s\n", sCache_table[i].acExpiry);
+            printf ("File Name : %s\n", sCache_table[i].acFilename);
+            printf ("*******************************************************\n\n");
+        }
+    }
     return 0;
 }
 
