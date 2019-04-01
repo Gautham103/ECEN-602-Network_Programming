@@ -5,17 +5,21 @@ SOURCES=$(wildcard src/*.c)
 SRCDIR=src
 OBJECT=$(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SOURCES:.c=.o))
 OBJDIR=obj
-serverDep=$(OBJDIR)/proxy_server.o $(OBJDIR)/helper.o 
+serverDep=$(OBJDIR)/server.o $(OBJDIR)/helper.o 
 OUTPUTDIR=bin
-proxy_server=proxy_server
-all: $(proxy_server)
+SERVER=server
+CLIENT=client
+all: $(SERVER) $(CLIENT)
 
-$(proxy_server): $(OBJECT)
-	$(CC) -o $(OUTPUTDIR)/$@ obj/helper.o obj/proxy_server.o -lpthread 
+$(SERVER): $(OBJECT)
+	$(CC) -o $(OUTPUTDIR)/$@ obj/helper.o obj/server.o 
+
+$(CLIENT): $(OBJECT)
+	$(CC) -o $(OUTPUTDIR)/$@ obj/helper.o obj/client.o -lpthread
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean 
 clean:
-	rm -f $(OBJDIR)/*.o $(OUTPUTDIR)/$(proxy_server)
+	rm -f $(OBJDIR)/*.o $(OUTPUTDIR)/$(SERVER) $(OUTPUTDIR)/$(CLIENT)
