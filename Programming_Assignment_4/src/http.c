@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
                     memset(acHost, 0, MAX_NAME_LENGTH);
                     memset(acUrl, 0, MAX_NAME_LENGTH);
                     memset(acName, 0, MAX_NAME_LENGTH);
+                    client_fd = socket_itr;
                     if(recv(client_fd, acBuffer, sizeof(acBuffer), 0) < 0)
                     {
                         perror("recv");
