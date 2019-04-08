@@ -1,8 +1,8 @@
 
-# TFTP Server Project
+# Simple HTTP Proxy
 
 
-ECEN 602 Network Programming Assignment 3
+ECEN 602 Network Programming Assignment 4
 -------------------------------------------------------------------------------------------------------------------------
 
 Team Number - 8
