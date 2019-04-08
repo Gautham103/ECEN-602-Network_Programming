@@ -74,10 +74,7 @@ int main(int argc, char * argv[]){
     }
 
     FILE *file_ptr;
-    char file_name[1000];
-    strcpy(file_name, "../html_files/");
-    strcat(file_name,file_itr);
-    file_ptr = fopen(file_name, "w");
+    file_ptr = fopen(file_itr, "w");
     int recv_msg_length;
     memset(buffer,0,10000);
     if((recv_msg_length = recv(client_fd, buffer, 10000,0)) <= 0){
