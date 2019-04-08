@@ -16,7 +16,7 @@ int main(int argc, char * argv[]){
         exit(1);
     }
     
-    port_number = atoi(argv[1]);
+    port_number = atoi(argv[2]);
     bzero(&curr_addr_ip4, sizeof(curr_addr_ip4));
     bzero(&remote_addr_ip4, sizeof(remote_addr_ip4));
 
@@ -44,7 +44,7 @@ int main(int argc, char * argv[]){
     file_path = strtok(NULL, "");
     sprintf(request,"GET /%s HTTP/1.0\r\nHost:%s\r\n\r\n", file_path, hostname);
     file_itr = file_path;
-    while(file_itr != NULL){
+    while(*file_itr != '\0'){
         if(*file_itr == '/'){
             file_count++;
         }
@@ -74,7 +74,10 @@ int main(int argc, char * argv[]){
     }
 
     FILE *file_ptr;
-    file_ptr = fopen(file_itr, "w");
+    char file_name[1000];
+    strcpy(file_name, "../html_files/");
+    strcat(file_name,file_itr);
+    file_ptr = fopen(file_name, "w");
     int recv_msg_length;
     memset(buffer,0,10000);
     if((recv_msg_length = recv(client_fd, buffer, 10000,0)) <= 0){
@@ -89,7 +92,7 @@ int main(int argc, char * argv[]){
         char * temp = strstr(buffer, "\r\n\r\n");
         fwrite(temp+4, 1, strlen(temp)-4, file_ptr);
         memset(buffer, 0, 10000);
-        while((recv_msg_length = recv(client_fd, buffer, 10000,0)) <= 0){
+        while((recv_msg_length = recv(client_fd, buffer, 10000,0)) > 0){
             fwrite(buffer, 1, recv_msg_length,file_ptr);
             memset(buffer, 0, 10000);
         }

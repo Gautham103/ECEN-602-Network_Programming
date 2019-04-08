@@ -5,20 +5,20 @@ SOURCES=$(wildcard src/*.c)
 SRCDIR=src
 OBJECT=$(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SOURCES:.c=.o))
 OBJDIR=obj
-serverDep=$(OBJDIR)/server.o $(OBJDIR)/helper.o 
+serverDep=$(OBJDIR)/http.o $(OBJDIR)/helper.o 
 OUTPUTDIR=bin
-SERVER=server
+SERVER=http
 CLIENT=client
 all: $(SERVER) $(CLIENT)
 
 $(SERVER): $(OBJECT)
-	$(CC) -o $(OUTPUTDIR)/$@ obj/helper.o obj/server.o 
+	$(CC) -o $(OUTPUTDIR)/$@ obj/helper.o obj/http.o 
 
 $(CLIENT): $(OBJECT)
-	$(CC) -o $(OUTPUTDIR)/$@ obj/helper.o obj/client.o -lpthread
+	$(CC) -g -o $(OUTPUTDIR)/$@ obj/helper.o obj/client.o -lpthread
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) -g $(CFLAGS) -c $< -o $@
 
 .PHONY: clean 
 clean:
