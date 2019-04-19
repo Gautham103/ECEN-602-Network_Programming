@@ -14,10 +14,10 @@ Member 2 - Gautham Srinivasan ( UIN 927008557)
 ------------------------------------------------------------------------------------------------------------------------
 Description:
 
-In this project, we have implemented a UDP based TFTP protocol for file transfer. The server can transfer file in both modes ascii and binary modes. It also supports wrap around to transfer files above 32MB as a basic stop and wait protocol. A bonus feature is also implemented which support WRQ request which allows writing the file back to the server.
+In this assignment, we have implement a simple HTTP proxy server and HTTP command line client. This implementation used HTTP/1.0, which is specified in RFC 1945.
 
-Amit Rawat: Implemented some section of server.c and helper.c file.
-Client.C, IPv6, IDLE feature and test cases are implemented by Gautham Srinivasan.
+Amit Rawat: Implemented client.c and some section of helper.c file.
+Gautham Srinivasan: Implemented server.c and some section of helper.c file.
 
 --------------------------------------------------------------------------------------------------------------------------
 Directory Structure:
@@ -31,31 +31,15 @@ obj - contains the object files of server.c, common.c, and client.c.
 src - contains the source file.
 
 --------------------------------------------------------------------------------------------------------------------------
-Functions Implemented:
-
-1) create_socket - create a new socket file descriptor.
-2) set_server_address - set the server address.
-3) bind_server, bind_server_ipv6 - bind the socket
-4) start_listening - it make server to listen from the socket.
-5) set_server_address,set_server_address_ipv6 - assign the ip and port passed as the command line argument.
-6) accept_connection - accept connections from client and return file descriptor.
-7) send_message - send the message.
-8) send_data - send data message.
-9) send_ack - send ACK message.
-10) send_error_message - send error message.
-11) broadcast_message - broadcast the message from the client to all the other clients.
-12) receive_message - receive message.
-13) get_mode - Return the mode of the file.
-14) zombie_handler_func - avoid zombie process.
-15) handle_message - handle the message.
-
---------------------------------------------------------------------------------------------------------------------------
 Running the code:
-1. Go to the directory ./Programming_Assignment_2
+1. Go to the directory ./Programming_Assignment_4
 2. Run the command: make clean
 3. Run the command: make all
 4. Go to directory ./bin
-5. For starting server: ./server IP_ADDRESS PORT MAXIMUM_USER
-6. To start the client: ./client CLIENT_NAME IP_ADDRESS PORT
+5. For starting http server: ./http IP_ADDRESS PORT
+6. To start the client: ./client IP_ADDRESS PORT WEB_ADDRESS
+   e.g. ./client 127.0.0.1 1234 www.<domain>.com
+   
+   Note: Do not use http://<domain>.com for web address rather use www.<domain>.com
 
 
