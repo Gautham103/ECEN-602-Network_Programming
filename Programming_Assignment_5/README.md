@@ -48,6 +48,6 @@ Case 3:
 
 Directory Structure:
 
-ns2.tcl - TCL Script
+      ns2.tcl - TCL Script
 
 
