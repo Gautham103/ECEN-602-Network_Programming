@@ -50,4 +50,11 @@ Directory Structure:
 
       ns2.tcl - TCL Script
 
+--------------------------------------------------------------------------------------------------------------------------
 
+Run the file:
+      ns ns2.tcl <TCP_flavor> <case_no>
+      E.g.
+            ns ns2.tcl SACK 1
+            ns ns2.tcl VEGAS 2
+      
