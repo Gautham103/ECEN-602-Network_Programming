@@ -31,11 +31,13 @@ Case 1:
    a) src1-R1 and R2-rcv1 end-2-end delay = 5 ms
    
    b) src2-R1 and R2-rcv2 end-2-end delay = 12.5 ms
+   
 Case 2:
 
    a) src1-R1 and R2-rcv1 end-2-end delay = 5 ms
    
    b) src2-R1 and R2-rcv2 end-2-end delay = 20 ms
+   
 Case 3:
 
    a) src1-R1 and R2-rcv1 end-2-end delay = 5 ms
