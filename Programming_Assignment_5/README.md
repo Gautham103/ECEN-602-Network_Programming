@@ -1,8 +1,8 @@
 
-# Simple HTTP Proxy
+# Network Simulation
 
 
-ECEN 602 Network Programming Assignment 4
+ECEN 602 Network Programming Assignment 5
 -------------------------------------------------------------------------------------------------------------------------
 
 Team Number - 8
@@ -14,32 +14,27 @@ Member 2 - Gautham Srinivasan ( UIN 927008557)
 ------------------------------------------------------------------------------------------------------------------------
 Description:
 
-In this assignment, we have implement a simple HTTP proxy server and HTTP command line client. This implementation used HTTP/1.0, which is specified in RFC 1945.
+1. In this assignment NS-2 simulator is used to build following configuration:
+   > Two routers (R1, R2) connected with a 1 Mbps link and 5ms of latency.
+   > Two senders (src1, src2) connected to R1 with 10 Mbps links.
+   > Two receivers (rcv1, rcv2) connected to R2 with 10 Mbps links.
+   > Application sender is FTP over TCP.
 
-Amit Rawat: Implemented client.c and some section of helper.c file.
-Gautham Srinivasan: Implemented server.c and some section of helper.c file.
+2. The simulation below were ran for a period of 400 seconds (ignoring first 100 seconds) with following parameter TCP Version = (TCP SACK | TCP VEGAS)
+
+Case 1:
+   > src1-R1 and R2-rcv1 end-2-end delay = 5 ms
+   > src2-R1 and R2-rcv2 end-2-end delay = 12.5 ms
+Case 2:
+   > src1-R1 and R2-rcv1 end-2-end delay = 5 ms
+   > src2-R1 and R2-rcv2 end-2-end delay = 20 ms
+Case 3:
+   > src1-R1 and R2-rcv1 end-2-end delay = 5 ms
+   > src2-R1 and R2-rcv2 end-2-end delay = 27.5 ms
 
 --------------------------------------------------------------------------------------------------------------------------
 Directory Structure:
 
-bin - contains the binary client and server
-
-include - contains the file common.h
-
-obj - contains the object files of server.c, common.c, and client.c.
-
-src - contains the source file.
-
---------------------------------------------------------------------------------------------------------------------------
-Running the code:
-1. Go to the directory ./Programming_Assignment_4
-2. Run the command: make clean
-3. Run the command: make all
-4. Go to directory ./bin
-5. For starting http server: ./http IP_ADDRESS PORT
-6. To start the client: ./client IP_ADDRESS PORT WEB_ADDRESS
-   e.g. ./client 127.0.0.1 1234 www.<domain>.com
-   
-   Note: Do not use http://<domain>.com for web address rather use www.<domain>.com
+ns2.tcl - TCL Script
 
 
