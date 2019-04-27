@@ -27,14 +27,17 @@ Description:
 2. The simulation below were ran for a period of 400 seconds (ignoring first 100 seconds) with following parameter TCP Version = (TCP SACK | TCP VEGAS)
 
 Case 1:
-   > src1-R1 and R2-rcv1 end-2-end delay = 5 ms
-   > src2-R1 and R2-rcv2 end-2-end delay = 12.5 ms
+   a) src1-R1 and R2-rcv1 end-2-end delay = 5 ms
+   
+   b) src2-R1 and R2-rcv2 end-2-end delay = 12.5 ms
 Case 2:
-   > src1-R1 and R2-rcv1 end-2-end delay = 5 ms
-   > src2-R1 and R2-rcv2 end-2-end delay = 20 ms
+   a) src1-R1 and R2-rcv1 end-2-end delay = 5 ms
+   
+   b) src2-R1 and R2-rcv2 end-2-end delay = 20 ms
 Case 3:
-   > src1-R1 and R2-rcv1 end-2-end delay = 5 ms
-   > src2-R1 and R2-rcv2 end-2-end delay = 27.5 ms
+   a) src1-R1 and R2-rcv1 end-2-end delay = 5 ms
+   
+   b) src2-R1 and R2-rcv2 end-2-end delay = 27.5 ms
 
 --------------------------------------------------------------------------------------------------------------------------
 Directory Structure:
