@@ -1,3 +1,5 @@
 # ECEN-602-Network_Programming
 
-1) 
+This repository contains the assignments done in Computer Networks ECEN 602
+
+
